@@ -82,6 +82,36 @@ switch($type){
             exit();
         }
     break;
+    case 'deleteIpAddress':
+        $ipAddressId = $_GET['ipAddressId'];
+        try {
+            mysqli_query($con,"DELETE FROM `ip_addresses` WHERE ia_id='$ipAddressId'");
+            $_SESSION['toastr_message'] = "IpAddress Has been Deleted Successfully!";
+            $_SESSION['toastr_type'] = "success";
+            header("Location: index.php");
+            exit();
+        } catch (Exception $e) {
+            $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+            $_SESSION['toastr_type'] = "error";
+            header("Location: index.php");
+            exit();
+        }
+    break;
+    case 'deleteAttendance':
+        $attenadanceId = $_GET['attenadanceId'];
+        try {
+            mysqli_query($con,"DELETE FROM `attendance` WHERE a_id='$attenadanceId'");
+            $_SESSION['toastr_message'] = "Attendance Has been Deleted Successfully!";
+            $_SESSION['toastr_type'] = "success";
+            header("Location: attendance.php");
+            exit();
+        } catch (Exception $e) {
+            $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+            $_SESSION['toastr_type'] = "error";
+            header("Location: attendance.php");
+            exit();
+        }
+    break;
     // case 'updateIP':
     //     $ipAddress1 = $_GET['ipAddress1'];
     //     $ipAddress2 = $_GET['ipAddress2'];

@@ -1,310 +1,152 @@
 <?php 
-include 'config.php';
-    if(isset($_SESSION['as_user'])){
-        $indexActive = 'active';
-        $attendanceActive = '';
-        $usersActive = '';
-        $adminsActive = '';
-        $clockInDisabled = '';
-        $clockOutDisabled = '';
-        $todayClockIn = '--:--';
-        $todayClockOut = '--:--';
+    include 'config.php';
+    if ($hasAdminRights) {
+        if (isset($_SESSION['as_user'])) {
+            $ipActive = 'active';
 
-        foreach($attendanceFileData as $row){
-            $elements = explode(',', $row);
-            if($_SESSION['userId'] == $elements[5] && $elements[1] == $currentDate){
-                $clockInDisabled = 'disabled';
-                $todayClockIn = $elements[2];
-                break;
+            // Add New IP
+            if (isset($_POST['add'])) {
+                try {
+                    $ipAddress = $_POST['ipAddress'];
+                    mysqli_query($con,"INSERT INTO ip_addresses(ia_address) VALUES ('$ipAddress')");
+                    $_SESSION['toastr_message'] = "IP Address Has been Added Successfully!";
+                    $_SESSION['toastr_type'] = "success";
+                    header("Location: index.php");
+                    exit();
+                } catch (Exception $e) {
+                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                    $_SESSION['toastr_type'] = "error";
+                    header("Location: index.php");
+                    exit();
+                } 
             }
-        }
 
-        foreach($attendanceFileData as $row){
-            $elements = explode(',', $row);
-            if($_SESSION['userId'] == $elements[5] && $elements[1] == $currentDate && $elements[4] == 1){
-                $clockOutDisabled = 'disabled';
-                $todayClockOut = $elements[3];
-                break;
+            // Get IP ID for Update
+            $ipId = $_GET['ipAddressId'];
+            if ($ipId) {
+                $ipQuery = mysqli_query($con,"SELECT * FROM ip_addresses WHERE ia_id='$ipId'");
+                if (mysqli_num_rows($ipQuery) == 0) {
+                    $_SESSION['toastr_message'] = "Invalid Access!";
+                    $_SESSION['toastr_type'] = "error";
+                    header("Location: index.php");
+                    exit();
+                }
+                $fetchIp = mysqli_fetch_assoc($ipQuery);
             }
-        }
+
+            // Update IP
+            if (isset($_POST['update'])) {
+                try {
+                    $ipAddress = $_POST['ipAddress'];
+                    mysqli_query($con,"UPDATE ip_addresses SET ia_address='$ipAddress' WHERE ia_id='$ipId'");
+                    $_SESSION['toastr_message'] = "IP Address Has been Updated Successfully!";
+                    $_SESSION['toastr_type'] = "success";
+                    header("Location: index.php");
+                    exit();
+                } catch (Exception $e) {
+                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                    $_SESSION['toastr_type'] = "error";
+                    header("Location: index.php");
+                    exit();
+                }
+            }     
 ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Home</title>
+		<title>IP Addresses</title>
         <?php include 'header-files.php' ?>
+        <link rel="stylesheet" href="assets/css/dataTables.bootstrap4.min.css">
 	</head>
-	<body onload="startTime()">
+	<body>
 		<div class="main-wrapper">
             <?php include 'header.php' ?>
             <?php include 'sidebar.php' ?>
 			<div class="page-wrapper">
 				<div class="content">
-                    <?php 
-                    if($currentUser[5] == 1){
-                    ?>
-					<div class="row">
-                        <div class="col-md-2 col-sm-6 col-12"></div>
-						<div class="col-md-3 col-sm-6 col-12">
-							<div class="dash-count">
-								<div class="dash-counts">
-									<h4><?= $standardClockIn ?></h4>
-									<h5>Standard Clock-In</h5>
-								</div>
-							</div>
+					<div class="page-header">
+						<div class="page-title">
+							<h4><?= ($ipId) ? 'Update' : 'Add' ?> IP Address</h4>
 						</div>
-						<div class="col-md-2 col-sm-6 col-12">
-							<div class="dash-count das1">
-								<div class="dash-counts">
-									<h4 id="txt"></h4>
-									<h5>Current Time</h5>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-3 col-sm-6 col-12">
-							<div class="dash-count das2">
-								<div class="dash-counts">
-									<h4><?= $standardClockOut ?></h4>
-									<h5>Standard Clock-Out</h5>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-2 col-sm-6 col-12"></div>
-						<div class="col-md-2 col-sm-6 col-12"></div>
-                        <div class="col-md-3 col-sm-6 col-12">
-							<div class="dash-count">
-								<div class="dash-counts">
-									<h4><?= $todayClockIn ?></h4>
-									<h5>Today's Clock-In</h5>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-2 col-sm-6 col-12">
-                            <button <?= $clockInDisabled ?> class="btn btn-danger w-100" onclick="addClockIn()" type="submit" name="clockIn" style="">Clock In</button>
-                            <button <?= $clockOutDisabled ?> class="btn btn-danger w-100" onclick="addClockOut()" type="submit" name="clockOut" style="margin-top:20px; margin-bottom:20px">Clock Out</button>
-                        </div>
-						<div class="col-md-3 col-sm-6 col-12">
-							<div class="dash-count das2">
-								<div class="dash-counts">
-									<h4><?= $todayClockOut ?></h4>
-									<h5>Today's Clock-Out</h5>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-2 col-sm-6 col-12"></div>
 					</div>
-                    <?php 
-                    }
-                    if($currentUser[5] == 0){
-                    ?>
+					<div class="card">
+						<div class="card-body">
+							<form class="row" method="post">
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>IP Address</label>
+										<input type="text" name="ipAddress" value="<?= $fetchIp['ia_address']?>">
+									</div>
+								</div>
+								<div class="col-lg-12">
+                                    <?php if ($ipId) { ?>
+									<button type="submit" name="update" class="btn btn-submit me-2">Update IP Address</button>
+                                    <?php } else { ?>
+									<button type="submit" name="add" class="btn btn-submit me-2">Add IP Address</button>
+                                    <?php } ?>
+								</div>
+                            </form>
+						</div>
+					</div>
                     <div class="page-header">
-                        <div class="page-title">
-                            <h4>Update IP Address</h4>
+						<div class="page-title">
+							<h4>IP Address List</h4>
+						</div>
+					</div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table datanew">
+                                    <thead>
+                                        <tr>
+                                            <th>S. No</th>
+                                            <th>IP Address</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                            $sno = 1;
+                                            $ipAddressQuery = mysqli_query($con,"SELECT * FROM ip_addresses");
+                                            while ($fetchIpAddress = mysqli_fetch_assoc($ipAddressQuery)) {
+                                        ?>
+                                        <tr>
+                                            <td><?= $sno ?></td>
+                                            <td><?= $fetchIpAddress['ia_address'] ?></td>
+                                            <td>
+                                                <a href="index.php?ipAddressId=<?= $fetchIpAddress['ia_id'] ?>"><img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit"></a>
+                                                <a href="code.php?type=deleteIpAddress&ipAddressId=<?= $fetchIpAddress['ia_id'] ?>"><img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete"></a>
+                                            </td>
+                                        </tr>
+                                        <?php 
+                                                $sno++;
+                                            }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <div class="card">
-						<div class="card-body">
-							<div class="row">
-                                <div class="col-md-6">
-									<div class="form-group">
-										<input value="<?= $ipAddressFileData[0] ?>" style="width:100%; height:35px" type="text" id="ipAddress1">
-									</div>
-								</div>	
-                                <div class="col-md-6">
-									<div class="form-group">
-										<input value="<?= $ipAddressFileData[1] ?>" style="width:100%; height:35px" type="text" id="ipAddress2">
-									</div>
-								</div>	
-								<div class="col-lg-12">
-									<button onclick="updateIP()" class="btn btn-submit me-2">Update IP Address</button>
-								</div>
-                            </div>
-						</div>
-					</div>
-                    <?php 
-                    }
-                    ?>
 				</div>
 			</div>
 		</div>	
 	</body>
 </html>
 <?php 
+    } else {
+        $_SESSION['toastr_message'] = "Please Login First!";
+        $_SESSION['toastr_type'] = "info";
+        header("Location: login.php");
+        exit();
     }
-    else{
-        echo'<script>window.location="login.php";</script>';
-    }
+} else {
+    $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
+    $_SESSION['toastr_type'] = "info";
+    header("Location: index.php");
+    exit();
+}
 include 'footer-files.php';
-?>
-<script>
-    function startTime() {
-        const today = new Date();
-        let h = today.getHours();
-        let m = today.getMinutes();
-        let s = today.getSeconds();
-        m = checkTime(m);
-        s = checkTime(s);
-        document.getElementById('txt').innerHTML =  h + ":" + m + ":" + s;
-        setTimeout(startTime, 1000);
-    }
-
-    function checkTime(i) {
-        if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-        return i;
-    }
-
-    function updateTime() {
-        var mondayClockIn = document.getElementById('mondayClockIn').value;
-        var mondayClockOut = document.getElementById('mondayClockOut').value;
-        var tuesdayClockIn = document.getElementById('tuesdayClockIn').value;
-        var tuesdayClockOut = document.getElementById('tuesdayClockOut').value;
-        var wednesdayClockIn = document.getElementById('wednesdayClockIn').value;
-        var wednesdayClockOut = document.getElementById('wednesdayClockOut').value;
-        var thursdayClockIn = document.getElementById('thursdayClockIn').value;
-        var thursdayClockOut = document.getElementById('thursdayClockOut').value;
-        var fridayClockIn = document.getElementById('fridayClockIn').value;
-        var fridayClockOut = document.getElementById('fridayClockOut').value;
-        var saturdayClockIn = document.getElementById('saturdayClockIn').value;
-        var saturdayClockOut = document.getElementById('saturdayClockOut').value;
-        var sundayClockIn = document.getElementById('sundayClockIn').value;
-        var sundayClockOut = document.getElementById('sundayClockOut').value;
-        $.ajax({
-            url: 'code.php',
-            type: 'GET',
-            data: {
-                type: 'updateTime',
-                mondayClockIn: mondayClockIn,
-                mondayClockOut: mondayClockOut,
-                tuesdayClockIn: tuesdayClockIn,
-                tuesdayClockOut: tuesdayClockOut,
-                wednesdayClockIn: wednesdayClockIn,
-                wednesdayClockOut: wednesdayClockOut,
-                thursdayClockIn: thursdayClockIn,
-                thursdayClockOut: thursdayClockOut,
-                fridayClockIn: fridayClockIn,
-                fridayClockOut: fridayClockOut,
-                saturdayClockIn: saturdayClockIn,
-                saturdayClockOut: saturdayClockOut,
-                sundayClockIn: sundayClockIn,
-                sundayClockOut: sundayClockOut
-            },
-            dataType: 'text',
-            success: function(data){
-                if(data == 1){
-                    alert('Time Updated');
-                }
-                else if(data == 0){
-                    alert('Server Error');
-                }
-                else{
-                    alert('Invalid Error')
-                }
-            }
-        });
-    }
-
-    function updateIP() {
-        var ipAddress1 = document.getElementById('ipAddress1').value;
-        var ipAddress2 = document.getElementById('ipAddress2').value;
-        $.ajax({
-            url: 'code.php',
-            type: 'GET',
-            data: {
-                type: 'updateIP',
-                ipAddress1: ipAddress1,
-                ipAddress2: ipAddress2
-            },
-            dataType: 'text',
-            success: function(data){
-                if(data == 1){
-                    alert('IP Address updated!');
-                }
-                else if(data == 0){
-                    alert('Server Error');
-                }
-            }
-        });
-    }
-
-    function addClockIn() {
-        $.ajax({
-            url: 'code.php',
-            type: 'GET',
-            data: {
-                type: 'addClockIn'
-            },
-            dataType: 'text',
-            success: function(data){
-                if(data == 1){
-                    alert('Clocked In');
-                    window.location.replace('index.php');
-                }
-                else if(data == 0){
-                    alert('Server Error');
-                }
-                else if(data == 2){
-                    alert('Time Exceeds the range');
-                }
-                else if(data == 3){
-                    alert('Error in opening the file');
-                }
-                else{
-                    alert('Invalid Error');
-                }
-            }
-        });
-    }
-
-    function addClockOut() {
-        $.ajax({
-            url: 'code.php',
-            type: 'GET',
-            data: {
-                type: 'addClockOut'
-            },
-            dataType: 'text',
-            success: function(data){
-                if(data == 1){
-                    alert('Clocked Out');
-                    window.location.replace('index.php');
-                }
-                else if(data == 0){
-                    alert('Server Error');
-                }
-                else if(data == 2){
-                    alert('Please Clock In First');
-                }
-                else{
-                    alert('Invalid Error')
-                }
-            }
-        });
-    }
-
-    function getRecord() {
-        // var userId = document.getElementById('userId').value;
-        var startDate = document.getElementById('startDate').value;
-        var endDate = document.getElementById('endDate').value;
-        $.ajax({
-            url: 'code.php',
-            type: 'GET',
-            data: {
-                type: 'getRecord',
-                // userId: userId,
-                startDate: startDate,
-                endDate: endDate
-            },
-            dataType: 'text',
-            success: function(data){
-                console.log(data);
-                document.getElementById('tableContent').innerHTML = data;
-            }
-        });
-    }
-</script>
+?>	
 <!-- Datatable JS -->
 <script src="assets/js/jquery.dataTables.min.js"></script>
 <script src="assets/js/dataTables.bootstrap4.min.js"></script>
-<!-- Chart JS -->
-<script src="assets/plugins/apexchart/apexcharts.min.js"></script>
-<script src="assets/plugins/apexchart/chart-data.js"></script>	

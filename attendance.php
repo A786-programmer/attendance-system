@@ -1,16 +1,72 @@
 <?php 
-    include 'config.php';
-    if ($hasAdminRights) {
-        if (isset($_SESSION['as_user'])) {
-            $attendanceActive = 'active';
-        
+include 'config.php';
+
+if ($hasAdminRights) {
+    if (isset($_SESSION['as_user'])) {
+        $attendanceActive = 'active';
+
+        // Add Attendance
+        if (isset($_POST['add'])) {
+            try {
+                $userId   = $_POST['user'];
+                $date     = $_POST['date'];
+                $clockIn  = $_POST['clockIn'];
+                $clockOut = $_POST['clockOut'];
+
+                mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_time_out, a_user) 
+                VALUES('$date', '$clockIn', '$clockOut', '$userId')");
+
+                $_SESSION['toastr_message'] = "Attendance Added Successfully!";
+                $_SESSION['toastr_type'] = "success";
+                header("Location: attendance.php");
+                exit();
+            } catch (Exception $e) {
+                $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                $_SESSION['toastr_type'] = "error";
+                header("Location: attendance.php");
+                exit();
+            }
+        }
+
+        $attendanceId = $_GET['attenadanceId'];
+        if ($attendanceId) {
+            $attendanceQuery = mysqli_query($con,"SELECT * FROM attendance WHERE a_id='$attendanceId'");
+            if (mysqli_num_rows($attendanceQuery) == 0) {
+                $_SESSION['toastr_message'] = "Invalid Access!";
+                $_SESSION['toastr_type'] = "error";
+                header("Location: index.php");
+                exit();
+            }
+            $fetchAttendance = mysqli_fetch_assoc($attendanceQuery);
+        }
+
+        if (isset($_POST['update'])) {
+            try {
+                $userId   = $_POST['user'];
+                $date     = $_POST['date'];
+                $clockIn  = $_POST['clockIn'];
+                $clockOut = $_POST['clockOut'];
+                $attendanceId = $_POST['attendanceId'];
+                mysqli_query($con,"UPDATE attendance SET a_date='$date', a_time_in='$clockIn', a_time_out='$clockOut', a_user='$userId' WHERE a_id='$attendanceId'");
+
+                $_SESSION['toastr_message'] = "Attendance Updated Successfully!";
+                $_SESSION['toastr_type'] = "success";
+                header("Location: attendance.php");
+                exit();
+            } catch (Exception $e) {
+                $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                $_SESSION['toastr_type'] = "error";
+                header("Location: attendance.php");
+                exit();
+            }
+        }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<title>Attendance</title>
         <?php include 'header-files.php' ?>
-        <!-- Datatable CSS -->
         <link rel="stylesheet" href="assets/css/dataTables.bootstrap4.min.css">
 	</head>
 	<body>
@@ -27,46 +83,47 @@
 					<div class="card">
 						<div class="card-body">
 							<form class="row" method="post">
+                                <input type="hidden" name="attendanceId" value="<?= isset($fetchAttendance['a_id']) ? $fetchAttendance['a_id'] : '' ?>">
                                 <div class="col-md-3">
-									<div class="form-group">
-										<label>User Name</label>
-										<select name="user">
-                                            <option>Select User</option>
+                                    <div class="form-group">
+                                        <label>User Name</label>
+                                        <select name="user" class="form-control" required>
+                                            <option value="">Select User</option>
                                             <?php 
-                                            foreach($usersFileData as $row){
-                                                $elements = explode(',', $row);
-                                                if($elements[5] == 0){
-                                                    continue;
-                                                }
+                                            $users = mysqli_query($con,"SELECT u_id, u_name FROM users");
+                                            while ($u = mysqli_fetch_assoc($users)) {
+                                                $selected = (isset($fetchAttendance['a_user']) && $fetchAttendance['a_user'] == $u['u_id']) ? 'selected' : '';
                                             ?>
-                                            <option value="<?= $elements[0] ?>"><?= $elements[1] ?></option>
-                                            <?php 
-                                            }
-                                            ?>
+                                                <option value="<?= $u['u_id'] ?>" <?= $selected ?>><?= $u['u_name'] ?></option>
+                                            <?php } ?>
                                         </select>
-									</div>
-								</div>	
+                                    </div>
+                                </div>  
                                 <div class="col-md-3">
-									<div class="form-group">
-										<label>Date</label>
-										<input style="width:100%" type="date" name="date">
-									</div>
-								</div>	
+                                    <div class="form-group">
+                                        <label>Date</label>
+                                        <input style="width:100%" type="date" name="date" value="<?= isset($fetchAttendance['a_date']) ? $fetchAttendance['a_date'] : '' ?>" required>
+                                    </div>
+                                </div>  
                                 <div class="col-md-3">
-									<div class="form-group">
-										<label>Clock In</label>
-										<input style="width:100%" type="time" name="clockIn">
-									</div>
-								</div>	
-								<div class="col-md-3">
-									<div class="form-group">
-										<label>Clock Out</label>
-										<input style="width:100%" type="time" name="clockOut">
-									</div>
-								</div>	
-								<div class="col-lg-12">
-									<button href="javascript:void(0);" type="submit" name="add" class="btn btn-submit me-2">Add Record</button>
-								</div>
+                                    <div class="form-group">
+                                        <label>Clock In</label>
+                                        <input style="width:100%" type="time" name="clockIn" value="<?= isset($fetchAttendance['a_time_in']) ? $fetchAttendance['a_time_in'] : '' ?>" required>
+                                    </div>
+                                </div>  
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Clock Out</label>
+                                        <input style="width:100%" type="time" name="clockOut" value="<?= isset($fetchAttendance['a_time_out']) ? $fetchAttendance['a_time_out'] : '' ?>" required>
+                                    </div>
+                                </div>  
+                                <div class="col-lg-12">
+                                    <?php if (isset($fetchAttendance['a_id'])) { ?>
+                                        <button type="submit" name="update" class="btn btn-submit me-2">Update Record</button>
+                                    <?php } else { ?>
+                                        <button type="submit" name="add" class="btn btn-submit me-2">Add Record</button>
+                                    <?php } ?>
+                                </div>
                             </form>
 						</div>
 					</div>
@@ -87,40 +144,44 @@
                                             <th>Clock In</th>
                                             <th>Clock Out</th>
                                             <th>Hours Worked</th>
+                                            <th>Actual Time In</th>
+                                            <th>Actual Time Out</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php 
-                                        $sno = 1;
-                                        foreach($attendanceFileData as $row){
-                                            $elements = explode(',', $row);
-                                            foreach($usersFileData as $userRow){
-                                                $userElements = explode(',', $userRow);
-                                                if($userElements[0] == $elements[5]){
-                                                    $userName = $userElements[1];
-                                                    break;
-                                                }
-                                            }
-                                            $a = new DateTime($elements[2]);
-                                            $b = new DateTime($elements[3]);
-                                            $interval = $a->diff($b);
+                                            $sno = 1;
+                                            $attendance = mysqli_query($con,"
+                                                SELECT a.*, u.u_name, u.u_time_in, u.u_time_out 
+                                                FROM attendance a 
+                                                JOIN users u ON a.a_user = u.u_id
+                                            ");
+                                            while ($fetchAttendance = mysqli_fetch_assoc($attendance)) {
+
+                                                // Hours Worked Calculate
+                                                $timeIn  = strtotime($fetchAttendance['a_time_in']);
+                                                $timeOut = strtotime($fetchAttendance['a_time_out']);
+                                                $diffInSeconds = $timeOut - $timeIn;
+                                                $hoursWorked = round($diffInSeconds / 3600, 2);
                                         ?>
                                         <tr>
                                             <td><?= $sno ?></td>
-                                            <td><?= $userName ?></td>
-                                            <td><?= $elements[1] ?></td>
-                                            <td><?= $elements[2] ?></td>
-                                            <td><?= $elements[3] ?></td>
-                                            <td><?= $interval->format("%H:%i") ?></td>
+                                            <td><?= $fetchAttendance['u_name'] ?></td>
+                                            <td><?= $fetchAttendance['a_date'] ?></td>
+                                            <td><?= $fetchAttendance['a_time_in'] ?></td>
+                                            <td><?= $fetchAttendance['a_time_out'] ?></td>
+                                            <td><?= number_format($hoursWorked,2) ?> hrs</td>
+                                            <td><?= $fetchAttendance['u_time_in'] ?></td>
+                                            <td><?= $fetchAttendance['u_time_out'] ?></td>
                                             <td>
-                                                <a href="attendance.php?attendanceId=<?= $elements[0] ?>"><i class="fa fa-edit" data-bs-toggle="tooltip" title="Edit"></i></a>
-                                                <a href="code.php?type=attendanceDelete&attendanceId=<?= $elements[0] ?>"><i class="fa fa-trash" data-bs-toggle="tooltip" title="Delete"></i></a>
+                                                <a href="attendance.php?attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit"></a>
+                                                <a href="code.php?type=deleteAttendance&attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete"></a>
                                             </td>
                                         </tr>
                                         <?php 
-                                            $sno++;
-                                        }
+                                                $sno++;
+                                            }
                                         ?>
                                     </tbody>
                                 </table>
@@ -133,20 +194,19 @@
 	</body>
 </html>
 <?php 
-        } else {
-            $_SESSION['toastr_message'] = "Please Login First!";
-            $_SESSION['toastr_type'] = "info";
-            header("Location: login.php");
-            exit();
-        }
     } else {
-        $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
+        $_SESSION['toastr_message'] = "Please Login First!";
         $_SESSION['toastr_type'] = "info";
-        header("Location: index.php");
+        header("Location: login.php");
         exit();
     }
-    include 'footer-files.php';
+} else {
+    $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
+    $_SESSION['toastr_type'] = "info";
+    header("Location: index.php");
+    exit();
+}
+include 'footer-files.php';
 ?>	
-<!-- Datatable JS -->
 <script src="assets/js/jquery.dataTables.min.js"></script>
 <script src="assets/js/dataTables.bootstrap4.min.js"></script>
