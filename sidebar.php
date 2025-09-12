@@ -13,6 +13,9 @@
                 <li class="<?= $usersActive ?>">
                     <a href="users.php"><img src="assets/img/icons/users1.svg" alt="img"><span>Users</span></a>
                 </li>
+                <li class="<?= $usersActive ?>">
+                    <a href="payroll.php"><img src="assets/img/icons/expense1.svg" alt="img"><span>Payroll</span></a>
+                </li>
                 <?php } ?>
             </ul>
         </div>

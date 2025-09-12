@@ -1,7 +1,6 @@
 <?php 
 include 'config.php';
-if($_SERVER['REMOTE_ADDR'] == $ipAddressFileData[0] || $_SERVER['REMOTE_ADDR'] == $ipAddressFileData[1]) {
-    if(isset($_SESSION['userId'])){
+    if(isset($_SESSION['as_user'])){
         $indexActive = 'active';
         $attendanceActive = '';
         $usersActive = '';
@@ -122,132 +121,6 @@ if($_SERVER['REMOTE_ADDR'] == $ipAddressFileData[0] || $_SERVER['REMOTE_ADDR'] =
                             </div>
 						</div>
 					</div>
-                    <div class="page-header">
-                        <div class="page-title">
-                            <h4>Update App Settings</h4>
-                        </div>
-                    </div>
-                    <div class="card">
-						<div class="card-body">
-                            <table class="table table-striped mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Days</th>
-                                        <th>Clock In</th>
-                                        <th>Clock Out</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Monday</td>
-                                        <td><input style="width:100%" type="time" id="mondayClockIn" value="<?= $mondayClockIn ?>"></td>
-                                        <td><input style="width:100%" type="time" id="mondayClockOut" value="<?= $mondayClockOut ?>"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tuesday</td>
-                                        <td><input style="width:100%" type="time" id="tuesdayClockIn" value="<?= $tuesdayClockIn ?>"></td>
-                                        <td><input style="width:100%" type="time" id="tuesdayClockOut" value="<?= $tuesdayClockOut ?>"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Wednesday</td>
-                                        <td><input style="width:100%" type="time" id="wednesdayClockIn" value="<?= $wednesdayClockIn ?>"></td>
-                                        <td><input style="width:100%" type="time" id="wednesdayClockOut" value="<?= $wednesdayClockOut ?>"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Thursday</td>
-                                        <td><input style="width:100%" type="time" id="thursdayClockIn" value="<?= $thursdayClockIn ?>"></td>
-                                        <td><input style="width:100%" type="time" id="thursdayClockOut" value="<?= $thursdayClockOut ?>"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Friday</td>
-                                        <td><input style="width:100%" type="time" id="fridayClockIn" value="<?= $fridayClockIn ?>"></td>
-                                        <td><input style="width:100%" type="time" id="fridayClockOut" value="<?= $fridayClockOut ?>"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Saturday</td>
-                                        <td><input style="width:100%" type="time" id="saturdayClockIn" value="<?= $saturdayClockIn ?>"></td>
-                                        <td><input style="width:100%" type="time" id="saturdayClockOut" value="<?= $saturdayClockOut ?>"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Sunday</td>
-                                        <td><input style="width:100%" type="time" id="sundayClockIn" value="<?= $sundayClockIn ?>"></td>
-                                        <td><input style="width:100%" type="time" id="sundayClockOut" value="<?= $sundayClockOut ?>"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-							<div class="row" style="margin-top:20px">
-								<div class="col-lg-12">
-									<button onclick="updateTime()" name="update" class="btn btn-submit me-2">Update Timmings</button>
-								</div>
-                            </div>
-						</div>
-					</div>
-                    <div class="page-header">
-                        <div class="page-title">
-                            <h4>Fetch Records for Payroll</h4>
-                        </div>
-                    </div>
-                    <div class="card">
-						<div class="card-body">
-							<div class="row">
-								<!-- <div class="col-md-4">
-									<div class="form-group">
-										<label>User Name</label>
-										<select style="width:100%; height:35px" id="userId">
-                                            <option>Select User</option>
-                                            <?php 
-                                            foreach($usersFileData as $row){
-                                                $elements = explode(',', $row);
-                                                if($elements[5] == 0){
-                                                    continue;
-                                                }
-                                            ?>
-                                            <option value="<?= $elements[0] ?>"><?= $elements[1] ?></option>
-                                            <?php 
-                                            }
-                                            ?>
-                                        </select>
-									</div>
-								</div>	 -->
-								<div class="col-md-6">
-									<div class="form-group">
-										<label>Start Date</label>
-										<input style="width:100%; height:35px" type="date" id="startDate">
-									</div>
-								</div>	
-								<div class="col-md-6">
-									<div class="form-group">
-										<label>End Date</label>
-										<input style="width:100%; height:35px" type="date" id="endDate">
-									</div>
-								</div>	
-								<div class="col-lg-12">
-									<button onclick="getRecord()" name="update" class="btn btn-submit me-2">Get Record</button>
-								</div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>S. No</th>
-                                                    <th>Date</th>
-                                                    <th>Check In</th>
-                                                    <th>Check Out</th>
-                                                    <th>Hours Worked</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tableContent">
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-						</div>
-					</div>
                     <?php 
                     }
                     ?>
@@ -261,10 +134,6 @@ if($_SERVER['REMOTE_ADDR'] == $ipAddressFileData[0] || $_SERVER['REMOTE_ADDR'] =
     else{
         echo'<script>window.location="login.php";</script>';
     }
-}
-else{
-    echo 'Invalid IP Access';
-}
 include 'footer-files.php';
 ?>
 <script>

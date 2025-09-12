@@ -72,32 +72,6 @@
 					</div>
                     <div class="page-header">
 						<div class="page-title">
-							<h4>Update Attendance Record</h4>
-						</div>
-					</div>
-					<div class="card">
-						<div class="card-body">
-							<form class="row" method="post">
-                                <div class="col-md-6">
-									<div class="form-group">
-										<label>Clock In</label>
-										<input style="width:100%" type="time" name="clockIn" value="<?= $attendanceString[2] ?>">
-									</div>
-								</div>	
-								<div class="col-md-6">
-									<div class="form-group">
-										<label>Clock Out</label>
-										<input style="width:100%" type="time" name="clockOut" value="<?= $attendanceString[3] ?>">
-									</div>
-								</div>	
-								<div class="col-lg-12">
-									<button href="javascript:void(0);" type="submit" name="update" class="btn btn-submit me-2">Update Record</button>
-								</div>
-                            </form>
-						</div>
-					</div>
-                    <div class="page-header">
-						<div class="page-title">
 							<h4>Attendance Details</h4>
 						</div>
 					</div>
