@@ -13,7 +13,10 @@
                 <li class="<?= $usersActive ?>">
                     <a href="users.php"><img src="assets/img/icons/users1.svg" alt="img"><span>Users</span></a>
                 </li>
-                <li class="<?= $usersActive ?>">
+                <li class="<?= $ipActive ?>">
+                    <a href="ip-address.php"><i data-feather="bar-chart-2"></i><span>IP Addresses</span></a>
+                </li>
+                <li class="<?= $payrollActive ?>">
                     <a href="payroll.php"><img src="assets/img/icons/expense1.svg" alt="img"><span>Payroll</span></a>
                 </li>
                 <?php } ?>

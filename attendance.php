@@ -1,66 +1,60 @@
 <?php 
-include 'config.php';
+    include 'config.php';
+    if ($hasAdminRights) {
+        if (isset($_SESSION['as_user'])) {
+            $attendanceActive = 'active';
 
-if ($hasAdminRights) {
-    if (isset($_SESSION['as_user'])) {
-        $attendanceActive = 'active';
-
-        // Add Attendance
-        if (isset($_POST['add'])) {
-            try {
-                $userId   = $_POST['user'];
-                $date     = $_POST['date'];
-                $clockIn  = $_POST['clockIn'];
-                $clockOut = $_POST['clockOut'];
-
-                mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_time_out, a_user) 
-                VALUES('$date', '$clockIn', '$clockOut', '$userId')");
-
-                $_SESSION['toastr_message'] = "Attendance Added Successfully!";
-                $_SESSION['toastr_type'] = "success";
-                header("Location: attendance.php");
-                exit();
-            } catch (Exception $e) {
-                $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-                $_SESSION['toastr_type'] = "error";
-                header("Location: attendance.php");
-                exit();
+            if (isset($_POST['add'])) {
+                try {
+                    $userId   = $_POST['user'];
+                    $date     = $_POST['date'];
+                    $clockIn  = $_POST['clockIn'];
+                    $clockOut = $_POST['clockOut'];
+                    mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_time_out, a_user) 
+                    VALUES('$date', '$clockIn', '$clockOut', '$userId')");
+                    $_SESSION['toastr_message'] = "Attendance Added Successfully!";
+                    $_SESSION['toastr_type'] = "success";
+                    header("Location: attendance.php");
+                    exit();
+                } catch (Exception $e) {
+                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                    $_SESSION['toastr_type'] = "error";
+                    header("Location: attendance.php");
+                    exit();
+                }
             }
-        }
 
-        $attendanceId = $_GET['attenadanceId'];
-        if ($attendanceId) {
-            $attendanceQuery = mysqli_query($con,"SELECT * FROM attendance WHERE a_id='$attendanceId'");
-            if (mysqli_num_rows($attendanceQuery) == 0) {
-                $_SESSION['toastr_message'] = "Invalid Access!";
-                $_SESSION['toastr_type'] = "error";
-                header("Location: index.php");
-                exit();
+            $attendanceId = $_GET['attenadanceId'];
+            if ($attendanceId) {
+                $attendanceQuery = mysqli_query($con,"SELECT * FROM attendance WHERE a_id='$attendanceId'");
+                if (mysqli_num_rows($attendanceQuery) == 0) {
+                    $_SESSION['toastr_message'] = "Invalid Access!";
+                    $_SESSION['toastr_type'] = "error";
+                    header("Location: index.php");
+                    exit();
+                }
+                $fetchAttendance = mysqli_fetch_assoc($attendanceQuery);
             }
-            $fetchAttendance = mysqli_fetch_assoc($attendanceQuery);
-        }
 
-        if (isset($_POST['update'])) {
-            try {
-                $userId   = $_POST['user'];
-                $date     = $_POST['date'];
-                $clockIn  = $_POST['clockIn'];
-                $clockOut = $_POST['clockOut'];
-                $attendanceId = $_POST['attendanceId'];
-                mysqli_query($con,"UPDATE attendance SET a_date='$date', a_time_in='$clockIn', a_time_out='$clockOut', a_user='$userId' WHERE a_id='$attendanceId'");
-
-                $_SESSION['toastr_message'] = "Attendance Updated Successfully!";
-                $_SESSION['toastr_type'] = "success";
-                header("Location: attendance.php");
-                exit();
-            } catch (Exception $e) {
-                $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-                $_SESSION['toastr_type'] = "error";
-                header("Location: attendance.php");
-                exit();
+            if (isset($_POST['update'])) {
+                try {
+                    $userId   = $_POST['user'];
+                    $date     = $_POST['date'];
+                    $clockIn  = $_POST['clockIn'];
+                    $clockOut = $_POST['clockOut'];
+                    $attendanceId = $_POST['attendanceId'];
+                    mysqli_query($con,"UPDATE attendance SET a_date='$date', a_time_in='$clockIn', a_time_out='$clockOut', a_user='$userId' WHERE a_id='$attendanceId'");
+                    $_SESSION['toastr_message'] = "Attendance Updated Successfully!";
+                    $_SESSION['toastr_type'] = "success";
+                    header("Location: attendance.php");
+                    exit();
+                } catch (Exception $e) {
+                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                    $_SESSION['toastr_type'] = "error";
+                    header("Location: attendance.php");
+                    exit();
+                }
             }
-        }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -90,11 +84,11 @@ if ($hasAdminRights) {
                                         <select name="user" class="form-control" required>
                                             <option value="">Select User</option>
                                             <?php 
-                                            $users = mysqli_query($con,"SELECT u_id, u_name FROM users");
-                                            while ($u = mysqli_fetch_assoc($users)) {
-                                                $selected = (isset($fetchAttendance['a_user']) && $fetchAttendance['a_user'] == $u['u_id']) ? 'selected' : '';
+                                            $users = mysqli_query($con,"SELECT u_id, u_name FROM users WHERE u_role='User'");
+                                            while ($fetchUsers = mysqli_fetch_assoc($users)) {
+                                                $selected = (isset($fetchAttendance['a_user']) && $fetchAttendance['a_user'] == $fetchUsers['u_id']) ? 'selected' : '';
                                             ?>
-                                                <option value="<?= $u['u_id'] ?>" <?= $selected ?>><?= $u['u_name'] ?></option>
+                                                <option value="<?= $fetchUsers['u_id'] ?>" <?= $selected ?>><?= $fetchUsers['u_name'] ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
@@ -163,7 +157,7 @@ if ($hasAdminRights) {
                                                 $timeIn  = strtotime($fetchAttendance['a_time_in']);
                                                 $timeOut = strtotime($fetchAttendance['a_time_out']);
                                                 $diffInSeconds = $timeOut - $timeIn;
-                                                $hoursWorked = round($diffInSeconds / 3600, 2);
+                                                $hoursWorked = gmdate("H:i:s", $diffInSeconds);
                                         ?>
                                         <tr>
                                             <td><?= $sno ?></td>
@@ -171,7 +165,7 @@ if ($hasAdminRights) {
                                             <td><?= $fetchAttendance['a_date'] ?></td>
                                             <td><?= $fetchAttendance['a_time_in'] ?></td>
                                             <td><?= $fetchAttendance['a_time_out'] ?></td>
-                                            <td><?= number_format($hoursWorked,2) ?> hrs</td>
+                                            <td><?= $hoursWorked ?></td>
                                             <td><?= $fetchAttendance['u_time_in'] ?></td>
                                             <td><?= $fetchAttendance['u_time_out'] ?></td>
                                             <td>
@@ -194,19 +188,19 @@ if ($hasAdminRights) {
 	</body>
 </html>
 <?php 
+        } else {
+            $_SESSION['toastr_message'] = "Please Login First!";
+            $_SESSION['toastr_type'] = "info";
+            header("Location: login.php");
+            exit();
+        }
     } else {
-        $_SESSION['toastr_message'] = "Please Login First!";
+        $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
         $_SESSION['toastr_type'] = "info";
-        header("Location: login.php");
+        header("Location: index.php");
         exit();
     }
-} else {
-    $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
-    $_SESSION['toastr_type'] = "info";
-    header("Location: index.php");
-    exit();
-}
-include 'footer-files.php';
+    include 'footer-files.php';
 ?>	
 <script src="assets/js/jquery.dataTables.min.js"></script>
 <script src="assets/js/dataTables.bootstrap4.min.js"></script>
