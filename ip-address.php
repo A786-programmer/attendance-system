@@ -35,7 +35,7 @@
 				<div class="content">
 					<div class="page-header">
 						<div class="page-title">
-							<h4><?= ($ipId) ? 'Update' : 'Add' ?> IP Address</h4>
+							<h4>Add IP Address</h4>
 						</div>
 					</div>
 					<div class="card">
@@ -44,15 +44,11 @@
 								<div class="col-md-4">
 									<div class="form-group">
 										<label>IP Address</label>
-										<input type="text" name="ipAddress" value="<?= $fetchIp['ia_address']?>">
+										<input type="text" name="ipAddress" value="">
 									</div>
 								</div>
 								<div class="col-lg-12">
-                                    <?php if ($ipId) { ?>
-									<button type="submit" name="update" class="btn btn-submit me-2">Update IP Address</button>
-                                    <?php } else { ?>
 									<button type="submit" name="add" class="btn btn-submit me-2">Add IP Address</button>
-                                    <?php } ?>
 								</div>
                             </form>
 						</div>

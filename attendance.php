@@ -10,8 +10,10 @@
                     $date     = $_POST['date'];
                     $clockIn  = $_POST['clockIn'];
                     $clockOut = $_POST['clockOut'];
-                    mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_time_out, a_user) 
-                    VALUES('$date', '$clockIn', '$clockOut', '$userId')");
+                    $user = mysqli_query($con,"SELECT u_time_in, u_time_out FROM `users` WHERE u_id='$userId'");
+                    $fetchUser = mysqli_fetch_assoc($user);
+                    mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_time_out, a_user, a_actual_time_in, a_actual_time_out) 
+                    VALUES('$date', '$clockIn', '$clockOut', '$userId', '$fetchUser[u_time_in]', '$fetchUser[u_time_out]')");
                     $_SESSION['toastr_message'] = "Attendance Added Successfully!";
                     $_SESSION['toastr_type'] = "success";
                     header("Location: attendance.php");
@@ -146,11 +148,7 @@
                                     <tbody>
                                         <?php 
                                             $sno = 1;
-                                            $attendance = mysqli_query($con,"
-                                                SELECT a.*, u.u_name, u.u_time_in, u.u_time_out 
-                                                FROM attendance a 
-                                                JOIN users u ON a.a_user = u.u_id
-                                            ");
+                                            $attendance = mysqli_query($con,"SELECT a.*, u.u_name FROM attendance a LEFT JOIN users u ON a.a_user = u.u_id");
                                             while ($fetchAttendance = mysqli_fetch_assoc($attendance)) {
 
                                                 // Hours Worked Calculate
@@ -166,8 +164,8 @@
                                             <td><?= $fetchAttendance['a_time_in'] ?></td>
                                             <td><?= $fetchAttendance['a_time_out'] ?></td>
                                             <td><?= $hoursWorked ?></td>
-                                            <td><?= $fetchAttendance['u_time_in'] ?></td>
-                                            <td><?= $fetchAttendance['u_time_out'] ?></td>
+                                            <td><?= $fetchAttendance['a_actual_time_in'] ?></td>
+                                            <td><?= $fetchAttendance['a_actual_time_out'] ?></td>
                                             <td>
                                                 <a href="attendance.php?attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit"></a>
                                                 <a href="code.php?type=deleteAttendance&attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete"></a>

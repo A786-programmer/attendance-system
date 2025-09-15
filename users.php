@@ -15,8 +15,9 @@
                     $joiningDate = $_POST['joiningDate'];
                     $timeIn = $_POST['timeIn'];
                     $timeOut = $_POST['timeOut'];
-                    mysqli_query($con,"INSERT INTO users(u_name, u_email, u_password, u_role, u_status, u_designation, u_salary, u_job_type, u_dob, u_joining_date, u_time_in, u_time_out)
-                    VALUES('$name', '$email', '$password', 'User', '1', '$designation', '$salary', 'Probation', '$dob', '$joiningDate', '$timeIn', '$timeOut')");
+                    $workingDays = $_POST['workingDays'];
+                    mysqli_query($con,"INSERT INTO users(u_name, u_email, u_password, u_role, u_status, u_designation, u_salary, u_job_type, u_dob, u_joining_date, u_working_days, u_time_in, u_time_out)
+                    VALUES('$name', '$email', '$password', 'User', '1', '$designation', '$salary', 'Probation', '$dob', '$joiningDate', '$workingDays', '$timeIn', '$timeOut')");
                     $_SESSION['toastr_message'] = "User Has been Added Successfully!";
                     $_SESSION['toastr_type'] = "success";
                     header("Location: users.php");
@@ -136,6 +137,12 @@
 									<div class="form-group">
 										<label>Time Out</label>
 										<input type="time" name="timeOut" value="<?= $fetchUser['u_time_out'] ?>">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Working Days</label>
+										<input type="number" name="workingDays" value="<?= $fetchUser['u_working_days'] ?>">
 									</div>
 								</div>
 								<div class="col-lg-12">
