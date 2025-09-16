@@ -7,8 +7,12 @@
                     <a href="index.php" ><img src="assets/img/icons/dashboard.svg" alt="img"><span>Dashboard</span></a>
                 </li>
                 <?php if ($hasAdminRights) { ?>
-                <li class="<?= $attendanceActive ?>">
-                    <a href="attendance.php"><img src="assets/img/icons/time.svg" alt="img"><span>Attendance</span></a>
+                <li class="submenu">
+                    <a href="javascript:void(0)"><img src="assets/img/icons/time.svg" alt="img"><span>Attendance</span><span class="menu-arrow"></span></a>
+                    <ul>
+                        <li><a href="add-attendance.php" class="<?= $addAttendanceActive ?>"> Add </a></li>
+                        <li><a href="fetch-attendance.php" class="<?= $fetchAttendanceActive ?>"> Fetch </a></li>
+                    </ul>
                 </li>
                 <li class="<?= $usersActive ?>">
                     <a href="users.php"><img src="assets/img/icons/users1.svg" alt="img"><span>Users</span></a>
@@ -16,9 +20,9 @@
                 <li class="<?= $ipActive ?>">
                     <a href="ip-address.php"><i data-feather="bar-chart-2"></i><span>IP Addresses</span></a>
                 </li>
-                <li class="<?= $payrollActive ?>">
+                <!-- <li class="<?= $payrollActive ?>">
                     <a href="payroll.php"><img src="assets/img/icons/expense1.svg" alt="img"><span>Payroll</span></a>
-                </li>
+                </li> -->
                 <?php } ?>
             </ul>
         </div>

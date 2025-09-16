@@ -2,7 +2,7 @@
     include 'config.php';
     if ($hasAdminRights) {
         if (isset($_SESSION['as_user'])) {
-            $attendanceActive = 'active';
+            $addAttendanceActive = 'active';
 
             if (isset($_POST['add'])) {
                 try {
@@ -16,12 +16,12 @@
                     VALUES('$date', '$clockIn', '$clockOut', '$userId', '$fetchUser[u_time_in]', '$fetchUser[u_time_out]')");
                     $_SESSION['toastr_message'] = "Attendance Added Successfully!";
                     $_SESSION['toastr_type'] = "success";
-                    header("Location: attendance.php");
+                    header("Location: add-attendance.php");
                     exit();
                 } catch (Exception $e) {
                     $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
                     $_SESSION['toastr_type'] = "error";
-                    header("Location: attendance.php");
+                    header("Location: add-attendance.php");
                     exit();
                 }
             }
@@ -48,12 +48,12 @@
                     mysqli_query($con,"UPDATE attendance SET a_date='$date', a_time_in='$clockIn', a_time_out='$clockOut', a_user='$userId' WHERE a_id='$attendanceId'");
                     $_SESSION['toastr_message'] = "Attendance Updated Successfully!";
                     $_SESSION['toastr_type'] = "success";
-                    header("Location: attendance.php");
+                    header("Location: add-attendance.php");
                     exit();
                 } catch (Exception $e) {
                     $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
                     $_SESSION['toastr_type'] = "error";
-                    header("Location: attendance.php");
+                    header("Location: add-attendance.php");
                     exit();
                 }
             }
@@ -61,7 +61,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Attendance</title>
+		<title>Add Attendance</title>
         <?php include 'header-files.php' ?>
         <link rel="stylesheet" href="assets/css/dataTables.bootstrap4.min.css">
 	</head>
@@ -167,7 +167,7 @@
                                             <td><?= $fetchAttendance['a_actual_time_in'] ?></td>
                                             <td><?= $fetchAttendance['a_actual_time_out'] ?></td>
                                             <td>
-                                                <a href="attendance.php?attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit"></a>
+                                                <a href="add-attendance.php?attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit"></a>
                                                 <a href="code.php?type=deleteAttendance&attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete"></a>
                                             </td>
                                         </tr>

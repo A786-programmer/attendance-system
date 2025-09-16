@@ -51,7 +51,8 @@
                     $joiningDate = $_POST['joiningDate'];
                     $timeIn = $_POST['timeIn'];
                     $timeOut = $_POST['timeOut'];
-                    mysqli_query($con,"UPDATE users SET u_name='$name', u_email='$email', u_password='$password', u_designation='$designation', u_salary='$salary', u_joining_date='$joiningDate', u_dob='$dob', u_time_in='$timeIn', u_time_out='$timeOut' WHERE u_id='$userId'");
+                    $workingDays = $_POST['workingDays'];
+                    mysqli_query($con,"UPDATE users SET u_name='$name', u_email='$email', u_password='$password', u_designation='$designation', u_salary='$salary', u_joining_date='$joiningDate', u_dob='$dob', u_working_days='$workingDays', u_time_in='$timeIn', u_time_out='$timeOut' WHERE u_id='$userId'");
                     $_SESSION['toastr_message'] = "User Has been Updated Successfully!";
                     $_SESSION['toastr_type'] = "success";
                     header("Location: users.php");
@@ -175,6 +176,7 @@
                                             <th>Salary</th>
                                             <th>Date Of Birth</th>
                                             <th>Joining Date</th>
+                                            <th>Working Days</th>
                                             <th>Timmings</th>
                                             <th>Status</th>
                                             <th>Job Type</th>
@@ -216,6 +218,7 @@
                                             <td>PKR <?= $fetchUsers['u_salary'] ?></td>
                                             <td><?= $fetchUsers['u_dob'] ?></td>
                                             <td><?= $fetchUsers['u_joining_date'] ?></td>
+                                            <td><?= $fetchUsers['u_working_days'] ?></td>
                                             <td><?= $fetchUsers['u_time_in'].' till '.$fetchUsers['u_time_out'] ?></td>
                                             <td><?= $status ?></td>
                                             <td><?= $jobType ?></td>

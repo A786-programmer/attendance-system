@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 12, 2025 at 12:25 PM
+-- Generation Time: Sep 17, 2025 at 12:48 AM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 7.3.28
 
@@ -37,6 +37,14 @@ CREATE TABLE `attendance` (
   `a_actual_time_out` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `attendance`
+--
+
+INSERT INTO `attendance` (`a_id`, `a_date`, `a_time_in`, `a_time_out`, `a_user`, `a_actual_time_in`, `a_actual_time_out`) VALUES
+(17, '2025-09-15', '14:48:00', '23:21:00', 2, '11:00:00', '22:00:00'),
+(18, '2025-08-07', '14:48:00', '23:21:00', 2, '11:00:00', '22:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -47,6 +55,13 @@ CREATE TABLE `ip_addresses` (
   `ia_id` int(11) NOT NULL,
   `ia_address` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `ip_addresses`
+--
+
+INSERT INTO `ip_addresses` (`ia_id`, `ia_address`) VALUES
+(1, '192.155.10');
 
 -- --------------------------------------------------------
 
@@ -67,6 +82,7 @@ CREATE TABLE `users` (
   `u_dob` date NOT NULL,
   `u_job_type` enum('Permanent','Probation','Notice Period') NOT NULL,
   `u_joining_date` date NOT NULL,
+  `u_working_days` int(11) NOT NULL,
   `u_time_in` time NOT NULL,
   `u_time_out` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -75,11 +91,12 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`u_id`, `u_name`, `u_email`, `u_password`, `u_profile_img`, `u_role`, `u_status`, `u_designation`, `u_salary`, `u_dob`, `u_job_type`, `u_joining_date`, `u_time_in`, `u_time_out`) VALUES
-(1, 'Admin ', 'admin@domain.com', '@dmin12345', 'Logo.png', 'Admin', '1', 'Boss', 0, '2025-09-12', '', '2025-09-10', '00:00:00', '00:00:00'),
-(2, 'Arbaz Ali', 'arbu1499@gmail.com', 'arbazali', '', 'User', '1', 'CEO of HakamTechSol', 130000, '1999-01-14', 'Permanent', '2025-09-10', '11:00:00', '22:00:00'),
-(5, 'Ibrahim Sharif', 'ibrahimsharif3812@gmail.com', '12345', '', 'User', '1', 'Team Lead', 35000, '2025-09-11', 'Probation', '2025-09-10', '14:00:00', '21:00:00'),
-(6, 'Aqsa Hussain', 'aqsahussain126@gmail.com', '12345', '', 'User', '1', 'Freelancer Bidder', 10000, '2002-06-12', 'Probation', '2025-08-26', '11:00:00', '18:00:00');
+INSERT INTO `users` (`u_id`, `u_name`, `u_email`, `u_password`, `u_profile_img`, `u_role`, `u_status`, `u_designation`, `u_salary`, `u_dob`, `u_job_type`, `u_joining_date`, `u_working_days`, `u_time_in`, `u_time_out`) VALUES
+(1, 'Admin ', 'admin@domain.com', '@dmin12345', 'Logo.png', 'Admin', '1', 'Boss', 0, '2025-09-12', '', '2025-09-10', 0, '00:00:00', '00:00:00'),
+(2, 'Arbaz Ali', 'arbu1499@gmail.com', 'arbazali', '', 'User', '1', 'CEO of HakamTechSol', 130000, '1999-01-14', 'Permanent', '2025-09-10', 7, '11:00:00', '22:00:00'),
+(5, 'Ibrahim Sharif', 'ibrahimsharif3812@gmail.com', '12345', '', 'User', '1', 'Team Lead', 35000, '2025-09-11', 'Probation', '2025-09-10', 0, '14:00:00', '21:00:00'),
+(6, 'Aqsa Hussain', 'aqsahussain126@gmail.com', '12345', '', 'User', '1', 'Freelancer Bidder', 10000, '2002-06-12', 'Probation', '2025-08-26', 0, '11:00:00', '18:00:00'),
+(7, 'Mohammad Noman', 'mughal17071999@gmail.com', '12345', '', 'User', '1', 'PHP/Laravel Developer', 20000, '1999-07-17', 'Probation', '2025-05-01', 6, '11:00:00', '20:00:00');
 
 --
 -- Indexes for dumped tables
@@ -112,19 +129,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `a_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `a_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `ip_addresses`
 --
 ALTER TABLE `ip_addresses`
-  MODIFY `ia_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ia_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables

@@ -2,13 +2,12 @@
     include 'config.php';
     if ($hasAdminRights) {
         if (isset($_SESSION['as_user'])) {
-            $payrollActive = 'active';
-            $month = $_POST['month'];
+            $fetchAttendanceActive = 'active';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Payroll</title>
+		<title>Fetch Attendance</title>
         <?php include 'header-files.php' ?>
         <link rel="stylesheet" href="assets/css/dataTables.bootstrap4.min.css">
 	</head>
@@ -20,12 +19,24 @@
 				<div class="content">
 					<div class="page-header">
 						<div class="page-title">
-							<h4>Payroll</h4>
+							<h4>Fetch Attendance</h4>
 						</div>
 					</div>
 					<div class="card">
 						<div class="card-body">
 							<form class="row" method="post">
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Select Month</label>
+										<input type="user" name="user">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+										<label>Select Month</label>
+										<input type="month" name="month" value="<?= $month ?>">
+									</div>
+								</div>
 								<div class="col-md-4">
 									<div class="form-group">
 										<label>Select Month</label>
