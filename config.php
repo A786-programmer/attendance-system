@@ -4,6 +4,7 @@
     $currentDate = date('Y-m-d');
     $currentTime = date("H:i");
     $currentDateTime = date('Y-m-d h:i:s');  
+    date_default_timezone_set('Asia/Karachi');
     // date_default_timezone_set("Canada/Central");
     error_reporting(0);
     $websiteName = 'Attendance System';
