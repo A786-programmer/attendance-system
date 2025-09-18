@@ -135,7 +135,7 @@
                                     <thead>
                                         <tr>
                                             <th>S. No</th>
-                                            <th>User Name</th>
+                                            <th>Employee</th>
                                             <th>Date</th>
                                             <th>Clock In</th>
                                             <th>Clock Out</th>
@@ -150,12 +150,14 @@
                                             $sno = 1;
                                             $attendance = mysqli_query($con,"SELECT a.*, u.u_name FROM attendance a LEFT JOIN users u ON a.a_user = u.u_id");
                                             while ($fetchAttendance = mysqli_fetch_assoc($attendance)) {
-
-                                                // Hours Worked Calculate
                                                 $timeIn  = strtotime($fetchAttendance['a_time_in']);
                                                 $timeOut = strtotime($fetchAttendance['a_time_out']);
                                                 $diffInSeconds = $timeOut - $timeIn;
-                                                $hoursWorked = gmdate("H:i:s", $diffInSeconds);
+                                                $hoursWorked = sprintf('%02d:%02d:%02d',
+                                                    floor($diffInSeconds / 3600),
+                                                    floor(($diffInSeconds % 3600) / 60),
+                                                    $diffInSeconds % 60
+                                                );
                                         ?>
                                         <tr>
                                             <td><?= $sno ?></td>

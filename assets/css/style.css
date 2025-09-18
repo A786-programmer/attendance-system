@@ -1243,6 +1243,7 @@ a:hover {
 .form-group input[type=password],
 .form-group input[type=date],
 .form-group input[type=month],
+.form-group input[type=file],
 .form-group input[type=time],
 .form-group input[type=number],
 .form-group select {
@@ -1260,6 +1261,7 @@ a:hover {
   .form-group input[type=password],
   .form-group input[type=date],
   .form-group input[type=month],
+  .form-group input[type=file],
   .form-group input[type=number],
   .form-group select {
     height: 50px;

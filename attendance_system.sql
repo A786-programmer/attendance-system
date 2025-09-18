@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 17, 2025 at 12:48 AM
+-- Generation Time: Sep 18, 2025 at 01:13 PM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 7.3.28
 
@@ -34,16 +34,18 @@ CREATE TABLE `attendance` (
   `a_time_out` time NOT NULL,
   `a_user` int(11) NOT NULL,
   `a_actual_time_in` time NOT NULL,
-  `a_actual_time_out` time NOT NULL
+  `a_actual_time_out` time NOT NULL,
+  `a_timesheet` varchar(5000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `attendance`
 --
 
-INSERT INTO `attendance` (`a_id`, `a_date`, `a_time_in`, `a_time_out`, `a_user`, `a_actual_time_in`, `a_actual_time_out`) VALUES
-(17, '2025-09-15', '14:48:00', '23:21:00', 2, '11:00:00', '22:00:00'),
-(18, '2025-08-07', '14:48:00', '23:21:00', 2, '11:00:00', '22:00:00');
+INSERT INTO `attendance` (`a_id`, `a_date`, `a_time_in`, `a_time_out`, `a_user`, `a_actual_time_in`, `a_actual_time_out`, `a_timesheet`) VALUES
+(17, '2025-09-15', '11:00:00', '22:00:00', 2, '11:00:00', '22:00:00', ''),
+(18, '2025-08-07', '14:48:00', '23:21:00', 2, '11:00:00', '22:00:00', ''),
+(20, '2025-09-18', '13:10:02', '13:11:01', 2, '11:00:00', '22:00:00', '');
 
 -- --------------------------------------------------------
 
@@ -129,7 +131,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `a_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `a_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `ip_addresses`
