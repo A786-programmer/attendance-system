@@ -130,7 +130,7 @@
                                                 }
                                                 
                                                 $status = '<span class="badges bg-lightyellow">On Time</span>';
-                                                if ($timeIn > $actualTimeIn) {
+                                                if ($timeIn+900 > $actualTimeIn) {
                                                     $status = '<span class="badges bg-lightred">Late</span>';
                                                 } else if ($timeIn < $actualTimeIn) {
                                                     $status = '<span class="badges bg-lightgreen">Before Time</span>';
