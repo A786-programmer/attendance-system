@@ -1,62 +1,63 @@
 <?php 
     include 'config.php';
-    if ($hasAdminRights) {
-        if (isset($_SESSION['as_user'])) {
-            $addAttendanceActive = 'active';
+    if(in_array($yourIP, $ipArray)) {
+        if ($hasAdminRights) {
+            if (isset($_SESSION['as_user'])) {
+                $addAttendanceActive = 'active';
 
-            if (isset($_POST['add'])) {
-                try {
-                    $userId   = $_POST['user'];
-                    $date     = $_POST['date'];
-                    $clockIn  = $_POST['clockIn'];
-                    $clockOut = $_POST['clockOut'];
-                    $user = mysqli_query($con,"SELECT u_time_in, u_time_out FROM `users` WHERE u_id='$userId'");
-                    $fetchUser = mysqli_fetch_assoc($user);
-                    mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_time_out, a_user, a_actual_time_in, a_actual_time_out) 
-                    VALUES('$date', '$clockIn', '$clockOut', '$userId', '$fetchUser[u_time_in]', '$fetchUser[u_time_out]')");
-                    $_SESSION['toastr_message'] = "Attendance Added Successfully!";
-                    $_SESSION['toastr_type'] = "success";
-                    header("Location: add-attendance.php");
-                    exit();
-                } catch (Exception $e) {
-                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-                    $_SESSION['toastr_type'] = "error";
-                    header("Location: add-attendance.php");
-                    exit();
+                if (isset($_POST['add'])) {
+                    try {
+                        $userId   = $_POST['user'];
+                        $date     = $_POST['date'];
+                        $clockIn  = $_POST['clockIn'];
+                        $clockOut = $_POST['clockOut'];
+                        $user = mysqli_query($con,"SELECT u_time_in, u_time_out FROM `users` WHERE u_id='$userId'");
+                        $fetchUser = mysqli_fetch_assoc($user);
+                        mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_time_out, a_user, a_actual_time_in, a_actual_time_out) 
+                        VALUES('$date', '$clockIn', '$clockOut', '$userId', '$fetchUser[u_time_in]', '$fetchUser[u_time_out]')");
+                        $_SESSION['toastr_message'] = "Attendance Added Successfully!";
+                        $_SESSION['toastr_type'] = "success";
+                        header("Location: add-attendance.php");
+                        exit();
+                    } catch (Exception $e) {
+                        $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                        $_SESSION['toastr_type'] = "error";
+                        header("Location: add-attendance.php");
+                        exit();
+                    }
                 }
-            }
 
-            $attendanceId = $_GET['attenadanceId'];
-            if ($attendanceId) {
-                $attendanceQuery = mysqli_query($con,"SELECT * FROM attendance WHERE a_id='$attendanceId'");
-                if (mysqli_num_rows($attendanceQuery) == 0) {
-                    $_SESSION['toastr_message'] = "Invalid Access!";
-                    $_SESSION['toastr_type'] = "error";
-                    header("Location: index.php");
-                    exit();
+                $attendanceId = $_GET['attenadanceId'];
+                if ($attendanceId) {
+                    $attendanceQuery = mysqli_query($con,"SELECT * FROM attendance WHERE a_id='$attendanceId'");
+                    if (mysqli_num_rows($attendanceQuery) == 0) {
+                        $_SESSION['toastr_message'] = "Invalid Access!";
+                        $_SESSION['toastr_type'] = "error";
+                        header("Location: index.php");
+                        exit();
+                    }
+                    $fetchAttendance = mysqli_fetch_assoc($attendanceQuery);
                 }
-                $fetchAttendance = mysqli_fetch_assoc($attendanceQuery);
-            }
 
-            if (isset($_POST['update'])) {
-                try {
-                    $userId   = $_POST['user'];
-                    $date     = $_POST['date'];
-                    $clockIn  = $_POST['clockIn'];
-                    $clockOut = $_POST['clockOut'];
-                    $attendanceId = $_POST['attendanceId'];
-                    mysqli_query($con,"UPDATE attendance SET a_date='$date', a_time_in='$clockIn', a_time_out='$clockOut', a_user='$userId' WHERE a_id='$attendanceId'");
-                    $_SESSION['toastr_message'] = "Attendance Updated Successfully!";
-                    $_SESSION['toastr_type'] = "success";
-                    header("Location: add-attendance.php");
-                    exit();
-                } catch (Exception $e) {
-                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-                    $_SESSION['toastr_type'] = "error";
-                    header("Location: add-attendance.php");
-                    exit();
+                if (isset($_POST['update'])) {
+                    try {
+                        $userId   = $_POST['user'];
+                        $date     = $_POST['date'];
+                        $clockIn  = $_POST['clockIn'];
+                        $clockOut = $_POST['clockOut'];
+                        $attendanceId = $_POST['attendanceId'];
+                        mysqli_query($con,"UPDATE attendance SET a_date='$date', a_time_in='$clockIn', a_time_out='$clockOut', a_user='$userId' WHERE a_id='$attendanceId'");
+                        $_SESSION['toastr_message'] = "Attendance Updated Successfully!";
+                        $_SESSION['toastr_type'] = "success";
+                        header("Location: add-attendance.php");
+                        exit();
+                    } catch (Exception $e) {
+                        $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                        $_SESSION['toastr_type'] = "error";
+                        header("Location: add-attendance.php");
+                        exit();
+                    }
                 }
-            }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -188,17 +189,20 @@
 	</body>
 </html>
 <?php 
+            } else {
+                $_SESSION['toastr_message'] = "Please Login First!";
+                $_SESSION['toastr_type'] = "info";
+                header("Location: login.php");
+                exit();
+            }
         } else {
-            $_SESSION['toastr_message'] = "Please Login First!";
+            $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
             $_SESSION['toastr_type'] = "info";
-            header("Location: login.php");
+            header("Location: index.php");
             exit();
         }
     } else {
-        $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
-        $_SESSION['toastr_type'] = "info";
-        header("Location: index.php");
-        exit();
+        echo 'Invalid IP Access. Your IP Address is'.$yourIP;
     }
     include 'footer-files.php';
 ?>	

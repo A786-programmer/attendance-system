@@ -1,24 +1,25 @@
 <?php 
     include 'config.php';
-    if ($hasAdminRights) {
-        if (isset($_SESSION['as_user'])) {
-            $ipActive = 'active';
+    if(in_array($yourIP, $ipArray)) {
+        if ($hasAdminRights) {
+            if (isset($_SESSION['as_user'])) {
+                $ipActive = 'active';
 
-            if (isset($_POST['add'])) {
-                try {
-                    $ipAddress = $_POST['ipAddress'];
-                    mysqli_query($con,"INSERT INTO ip_addresses(ia_address) VALUES ('$ipAddress')");
-                    $_SESSION['toastr_message'] = "IP Address Has been Added Successfully!";
-                    $_SESSION['toastr_type'] = "success";
-                    header("Location: index.php");
-                    exit();
-                } catch (Exception $e) {
-                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-                    $_SESSION['toastr_type'] = "error";
-                    header("Location: index.php");
-                    exit();
-                } 
-            }   
+                if (isset($_POST['add'])) {
+                    try {
+                        $ipAddress = $_POST['ipAddress'];
+                        mysqli_query($con,"INSERT INTO ip_addresses(ia_address) VALUES ('$ipAddress')");
+                        $_SESSION['toastr_message'] = "IP Address Has been Added Successfully!";
+                        $_SESSION['toastr_type'] = "success";
+                        header("Location: ip-address.php");
+                        exit();
+                    } catch (Exception $e) {
+                        $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                        $_SESSION['toastr_type'] = "error";
+                        header("Location: ip-address.php");
+                        exit();
+                    } 
+                }   
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -95,17 +96,20 @@
 	</body>
 </html>
 <?php 
+            } else {
+                $_SESSION['toastr_message'] = "Please Login First!";
+                $_SESSION['toastr_type'] = "info";
+                header("Location: login.php");
+                exit();
+            }
         } else {
-            $_SESSION['toastr_message'] = "Please Login First!";
+            $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
             $_SESSION['toastr_type'] = "info";
-            header("Location: login.php");
+            header("Location: index.php");
             exit();
         }
     } else {
-        $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
-        $_SESSION['toastr_type'] = "info";
-        header("Location: index.php");
-        exit();
+        echo 'Invalid IP Access. Your IP Address is'.$yourIP;
     }
     include 'footer-files.php';
 ?>	

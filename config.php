@@ -18,64 +18,11 @@
     if ($fetchUser['u_profile_img']) {
         $profileImg = $fetchUser['u_profile_img'];
     }
-?>
-<?php
+    $yourIP = $_SERVER['REMOTE_ADDR'];
 
-// foreach($usersFileData as $row){
-//     $elements = explode(',', $row);
-//     if($elements[0] == $_SESSION['userId']){
-//         $currentUser = $elements;
-//     }
-// }
-
-// $img = 'userProfiles/'.$currentUser[4];
-// if($currentUser[4] == ''){
-//     $img = 'assets/img/profiles/avator1.jpg';
-// }
-// if($currentUser[5] == 0){
-//     $role = 'Admin';
-// }
-// elseif($currentUser[5] == 1){
-//     $role = 'User';
-// }
-
-// $dayName = date("l");
-// $standardClockIn = $mondayClockIn;
-// $standardClockOut = $mondayClockOut;
-
-// switch($dayName){
-//     case 'Monday':
-//         $standardClockIn = $mondayClockIn;
-//         $standardClockOut = $mondayClockOut;
-//     break;
-//     case 'Tuesday':
-//         $standardClockIn = $tuesdayClockIn;
-//         $standardClockOut = $tuesdayClockOut;
-//     break;
-//     case 'Wednesday':
-//         $standardClockIn = $wednesdayClockIn;
-//         $standardClockOut = $wednesdayClockOut;
-//     break;
-//     case 'Thursday':
-//         $standardClockIn = $thursdayClockIn;
-//         $standardClockOut = $thursdayClockOut;
-//     break;
-//     case 'Friday':
-//         $standardClockIn = $fridayClockIn;
-//         $standardClockOut = $fridayClockOut;
-//     break;
-//     case 'Saturday':
-//         $standardClockIn = $saturdayClockIn;
-//         $standardClockOut = $saturdayClockOut;
-//     break;
-//     case 'Sunday':
-//         $standardClockIn = $sundayClockIn;
-//         $standardClockOut = $sundayClockOut;
-//     break;
-//     default:
-//         $standardClockIn = $mondayClockIn;
-//         $standardClockOut = $mondayClockOut;
-// }
-
-// $ipAddress = $_SERVER['REMOTE_ADDR'];
+    $ipArray = [];
+    $ips = mysqli_query($con, "SELECT ia_address FROM `ip_addresses`");
+    while ($fetchIPs = mysqli_fetch_assoc($ips)) {
+        $ipArray[] = $fetchIPs['ia_address'];
+    }
 ?>

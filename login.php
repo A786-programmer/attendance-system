@@ -1,35 +1,36 @@
 <?php 
     include 'config.php';
-    if (!isset($_SESSION['as_user'])) {
-        if (isset($_POST['login'])) {
-            try {
-                $email = $_POST['email'];
-                $password = $_POST['password'];
-                $user = mysqli_query($con,"SELECT * FROM `users` WHERE u_email='$email' AND u_password='$password'");
+    if(in_array($yourIP, $ipArray)) {
+        if (!isset($_SESSION['as_user'])) {
+            if (isset($_POST['login'])) {
+                try {
+                    $email = $_POST['email'];
+                    $password = $_POST['password'];
+                    $user = mysqli_query($con,"SELECT * FROM `users` WHERE u_email='$email' AND u_password='$password'");
 
-                if (mysqli_num_rows($user)) {
-                    $fetchUser = mysqli_fetch_assoc($user);
-                    if ($fetchUser['u_status'] == 0) {
-                        $_SESSION['toastr_message'] = "Your Account has been Disabled by Admin!";
-                        $_SESSION['toastr_type'] = "error";       
-                        header("Location: login.php");
+                    if (mysqli_num_rows($user)) {
+                        $fetchUser = mysqli_fetch_assoc($user);
+                        if ($fetchUser['u_status'] == 0) {
+                            $_SESSION['toastr_message'] = "Your Account has been Disabled by Admin!";
+                            $_SESSION['toastr_type'] = "error";       
+                            header("Location: login.php");
+                            exit();
+                        }
+                        $_SESSION['as_user'] = $fetchUser['u_id'];
+                        header("Location: settings.php");
                         exit();
                     }
-                    $_SESSION['as_user'] = $fetchUser['u_id'];
-                    header("Location: settings.php");
+                    $_SESSION['toastr_message'] = "Invalid Credentials!";
+                    $_SESSION['toastr_type'] = "error";
+                    header("Location: login.php");
+                    exit();
+                } catch(Exception $e) {
+                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                    $_SESSION['toastr_type'] = "error";
+                    header("Location: login.php");
                     exit();
                 }
-                $_SESSION['toastr_message'] = "Invalid Credentials!";
-                $_SESSION['toastr_type'] = "error";
-                header("Location: login.php");
-                exit();
-			} catch(Exception $e) {
-				$_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-				$_SESSION['toastr_type'] = "error";
-				header("Location: login.php");
-				exit();
-			}
-		}
+            }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,11 +77,14 @@
     </body>
 </html>
 <?php 
+        } else {
+            $_SESSION['toastr_message'] = "You are already logged in!";
+            $_SESSION['toastr_type'] = "info";
+            header("Location: index.php");
+            exit();
+        }
     } else {
-        $_SESSION['toastr_message'] = "You are already logged in!";
-        $_SESSION['toastr_type'] = "info";
-        header("Location: index.php");
-        exit();
+        echo 'Invalid IP Access. Your IP Address is'.$yourIP;
     }
     include 'footer-files.php';
 ?>

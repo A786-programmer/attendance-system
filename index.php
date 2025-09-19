@@ -1,87 +1,88 @@
 <?php 
     include 'config.php';
-    if (isset($_SESSION['as_user'])) {
-        $indexActive = 'active';
+    if(in_array($yourIP, $ipArray)) {
+        if (isset($_SESSION['as_user'])) {
+            $indexActive = 'active';
 
-        // Handle Check-in
-        if (isset($_POST['checkin'])) {
-            try {
-                $userId = $_SESSION['as_user']; 
-                $date   = date("Y-m-d");
-                $timeIn = date("H:i:s");
+            // Handle Check-in
+            if (isset($_POST['checkin'])) {
+                try {
+                    $userId = $_SESSION['as_user']; 
+                    $date   = date("Y-m-d");
+                    $timeIn = date("H:i:s");
 
-                $checkToday = mysqli_query($con, "SELECT * FROM attendance WHERE a_user='$userId' AND a_date='$date' AND a_time_in IS NOT NULL");
-                if (mysqli_num_rows($checkToday) > 0) {
-                    $_SESSION['toastr_message'] = "You have already checked in today!";
-                    $_SESSION['toastr_type'] = "info";
+                    $checkToday = mysqli_query($con, "SELECT * FROM attendance WHERE a_user='$userId' AND a_date='$date' AND a_time_in IS NOT NULL");
+                    if (mysqli_num_rows($checkToday) > 0) {
+                        $_SESSION['toastr_message'] = "You have already checked in today!";
+                        $_SESSION['toastr_type'] = "info";
+                        header("Location: index.php");
+                        exit();
+                    }
+
+                    $user = mysqli_query($con,"SELECT u_time_in, u_time_out FROM `users` WHERE u_id='$userId'");
+                    $fetchUser = mysqli_fetch_assoc($user);
+                    $actualIn  = $fetchUser['u_time_in'];
+                    $actualOut = $fetchUser['u_time_out'];
+
+                    mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_user, a_actual_time_in, a_actual_time_out) 
+                        VALUES('$date', '$timeIn', '$userId', '$actualIn', '$actualOut')");
+
+                    $_SESSION['toastr_message'] = "Checked In at $timeIn";
+                    $_SESSION['toastr_type'] = "success";
+                    $_SESSION['checkin_time'] = "$date $timeIn";
+                    header("Location: index.php");
+                    exit();
+                } catch (Exception $e) {
+                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                    $_SESSION['toastr_type'] = "error";
                     header("Location: index.php");
                     exit();
                 }
-
-                $user = mysqli_query($con,"SELECT u_time_in, u_time_out FROM `users` WHERE u_id='$userId'");
-                $fetchUser = mysqli_fetch_assoc($user);
-                $actualIn  = $fetchUser['u_time_in'];
-                $actualOut = $fetchUser['u_time_out'];
-
-                mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_user, a_actual_time_in, a_actual_time_out) 
-                    VALUES('$date', '$timeIn', '$userId', '$actualIn', '$actualOut')");
-
-                $_SESSION['toastr_message'] = "Checked In at $timeIn";
-                $_SESSION['toastr_type'] = "success";
-                $_SESSION['checkin_time'] = "$date $timeIn";
-                header("Location: index.php");
-                exit();
-            } catch (Exception $e) {
-                $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-                $_SESSION['toastr_type'] = "error";
-                header("Location: index.php");
-                exit();
             }
-        }
 
-        // Handle Check-out
-        if (isset($_POST['checkout'])) {
-            try {
-                $userId = $_SESSION['as_user'];
-                $timesheet = isset($_POST['timesheet']) ? $_POST['timesheet'] : '';
-                $date   = date("Y-m-d");
-                $timeOut = date("H:i:s");
+            // Handle Check-out
+            if (isset($_POST['checkout'])) {
+                try {
+                    $userId = $_SESSION['as_user'];
+                    $timesheet = isset($_POST['timesheet']) ? $_POST['timesheet'] : '';
+                    $date   = date("Y-m-d");
+                    $timeOut = date("H:i:s");
 
-                mysqli_query($con,"UPDATE attendance SET a_time_out='$timeOut', a_timesheet='" . mysqli_real_escape_string($con, $timesheet) . "' WHERE a_user='$userId' AND a_date='$date' AND (a_time_out IS NULL OR a_time_out='')");
+                    mysqli_query($con,"UPDATE attendance SET a_time_out='$timeOut', a_timesheet='" . mysqli_real_escape_string($con, $timesheet) . "' WHERE a_user='$userId' AND a_date='$date' AND (a_time_out IS NULL OR a_time_out='')");
 
-                if (mysqli_affected_rows($con) > 0) {
-                    $_SESSION['toastr_message'] = "Checked Out at $timeOut";
-                    $_SESSION['toastr_type'] = "success";
-                    $_SESSION['checkout_done'] = true;
-                } else {
-                    $_SESSION['toastr_message'] = "No active check-in found!";
-                    $_SESSION['toastr_type'] = "info";
+                    if (mysqli_affected_rows($con) > 0) {
+                        $_SESSION['toastr_message'] = "Checked Out at $timeOut";
+                        $_SESSION['toastr_type'] = "success";
+                        $_SESSION['checkout_done'] = true;
+                    } else {
+                        $_SESSION['toastr_message'] = "No active check-in found!";
+                        $_SESSION['toastr_type'] = "info";
+                    }
+
+                    header("Location: index.php");
+                    exit();
+                } catch (Exception $e) {
+                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                    $_SESSION['toastr_type'] = "error";
+                    header("Location: index.php");
+                    exit();
                 }
-
-                header("Location: index.php");
-                exit();
-            } catch (Exception $e) {
-                $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-                $_SESSION['toastr_type'] = "error";
-                header("Location: index.php");
-                exit();
             }
-        }
 
-        $today = date("Y-m-d");
-        $userId = $_SESSION['as_user'];
-        $checkToday = mysqli_query($con,"SELECT * FROM attendance WHERE a_user='$userId' AND a_date='$today' AND (a_time_out IS NULL OR a_time_out='') ORDER BY a_id DESC LIMIT 1");
-        $hasActiveCheckin = mysqli_num_rows($checkToday) > 0;
+            $today = date("Y-m-d");
+            $userId = $_SESSION['as_user'];
+            $checkToday = mysqli_query($con,"SELECT * FROM attendance WHERE a_user='$userId' AND a_date='$today' AND (a_time_out IS NULL OR a_time_out='') ORDER BY a_id DESC LIMIT 1");
+            $hasActiveCheckin = mysqli_num_rows($checkToday) > 0;
 
-        $headerStartTs = null;
-        if ($hasActiveCheckin) {
-            $activeRow = mysqli_fetch_assoc($checkToday);
-            $headerStartTs = strtotime($activeRow['a_date'] . ' ' . $activeRow['a_time_in']);
-        } elseif (isset($_SESSION['checkin_time'])) {
-            $headerStartTs = strtotime($_SESSION['checkin_time']);
-        }
+            $headerStartTs = null;
+            if ($hasActiveCheckin) {
+                $activeRow = mysqli_fetch_assoc($checkToday);
+                $headerStartTs = strtotime($activeRow['a_date'] . ' ' . $activeRow['a_time_in']);
+            } elseif (isset($_SESSION['checkin_time'])) {
+                $headerStartTs = strtotime($_SESSION['checkin_time']);
+            }
 
-        $activeTimers = [];
+            $activeTimers = [];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -306,10 +307,13 @@
     </body>
 </html>
 <?php 
+        } else {
+            $_SESSION['toastr_message'] = "Please Login First!";
+            $_SESSION['toastr_type'] = "info";
+            header("Location: login.php");
+            exit();
+        }
     } else {
-        $_SESSION['toastr_message'] = "Please Login First!";
-        $_SESSION['toastr_type'] = "info";
-        header("Location: login.php");
-        exit();
+        echo 'Invalid IP Access. Your IP Address is'.$yourIP;
     }
 ?>

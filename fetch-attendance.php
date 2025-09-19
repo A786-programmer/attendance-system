@@ -1,17 +1,18 @@
 <?php 
     include 'config.php';
-    if ($hasAdminRights) {
-        if (isset($_SESSION['as_user'])) {
-            $showAttendanceSection = false;
-            $fetchAttendanceActive = 'active';
+    if(in_array($yourIP, $ipArray)) {
+        if ($hasAdminRights) {
+            if (isset($_SESSION['as_user'])) {
+                $showAttendanceSection = false;
+                $fetchAttendanceActive = 'active';
 
-            if (isset($_POST['fetch'])) {
-                $showAttendanceSection = true;
-                $user = $_POST['user'];
-                $start = $_POST['start'];
-                $end = $_POST['end'];
-                $attendance = mysqli_query($con,"SELECT * FROM attendance WHERE a_user='$user' AND a_date BETWEEN '$start' AND '$end' ORDER BY a_date ASC");
-            }
+                if (isset($_POST['fetch'])) {
+                    $showAttendanceSection = true;
+                    $user = $_POST['user'];
+                    $start = $_POST['start'];
+                    $end = $_POST['end'];
+                    $attendance = mysqli_query($con,"SELECT * FROM attendance WHERE a_user='$user' AND a_date BETWEEN '$start' AND '$end' ORDER BY a_date ASC");
+                }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -164,17 +165,20 @@
 	</body>
 </html>
 <?php 
+            } else {
+                $_SESSION['toastr_message'] = "Please Login First!";
+                $_SESSION['toastr_type'] = "info";
+                header("Location: login.php");
+                exit();
+            }
         } else {
-            $_SESSION['toastr_message'] = "Please Login First!";
+            $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
             $_SESSION['toastr_type'] = "info";
-            header("Location: login.php");
+            header("Location: index.php");
             exit();
         }
     } else {
-        $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
-        $_SESSION['toastr_type'] = "info";
-        header("Location: index.php");
-        exit();
+        echo 'Invalid IP Access. Your IP Address is'.$yourIP;
     }
     include 'footer-files.php';
 ?>	

@@ -1,29 +1,30 @@
 <?php 
 	include 'config.php';
-	if (isset($_SESSION['as_user'])) {
-		if(isset($_POST['update'])){
-			try {
-				$userName = $_POST['userName'];
-				$userEmail = $_POST['userEmail'];
-				$userPassword = $_POST['userPassword'];
-				$userProfile = $_FILES['userProfile']['name'];
-				if ($userProfile) {
-					move_uploaded_file($_FILES['userProfile']['tmp_name'], "user-profile-imgs/".$userProfile);
-				} else {
-					$userProfile = $fetchUser['u_profile_img'];
+    if(in_array($yourIP, $ipArray)) {
+		if (isset($_SESSION['as_user'])) {
+			if(isset($_POST['update'])){
+				try {
+					$userName = $_POST['userName'];
+					$userEmail = $_POST['userEmail'];
+					$userPassword = $_POST['userPassword'];
+					$userProfile = $_FILES['userProfile']['name'];
+					if ($userProfile) {
+						move_uploaded_file($_FILES['userProfile']['tmp_name'], "user-profile-imgs/".$userProfile);
+					} else {
+						$userProfile = $fetchUser['u_profile_img'];
+					}
+					mysqli_query($con,"UPDATE users SET u_name='$userName', u_email='$userEmail', u_password='$userPassword', u_profile_img='$userProfile' WHERE u_id='$_SESSION[as_user]'");
+					$_SESSION['toastr_message'] = "Details Updated Successfully!";
+					$_SESSION['toastr_type'] = "success";
+					header("Location: settings.php");
+					exit();
+				} catch (Exception $e) {
+					$_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+					$_SESSION['toastr_type'] = "error";
+					header("Location: settings.php");
+					exit();
 				}
-				mysqli_query($con,"UPDATE users SET u_name='$userName', u_email='$userEmail', u_password='$userPassword', u_profile_img='$userProfile' WHERE u_id='$_SESSION[as_user]'");
-				$_SESSION['toastr_message'] = "Details Updated Successfully!";
-                $_SESSION['toastr_type'] = "success";
-                header("Location: settings.php");
-                exit();
-			} catch (Exception $e) {
-				$_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-				$_SESSION['toastr_type'] = "error";
-				header("Location: settings.php");
-				exit();
 			}
-		}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -81,11 +82,14 @@
 	</body>
 </html>
 <?php 
+		} else {
+			$_SESSION['toastr_message'] = "Please Login First!";
+			$_SESSION['toastr_type'] = "info";
+			header("Location: login.php");
+			exit();
+		}
 	} else {
-		$_SESSION['toastr_message'] = "Please Login First!";
-		$_SESSION['toastr_type'] = "info";
-		header("Location: login.php");
-		exit();
-	}
+        echo 'Invalid IP Access. Your IP Address is'.$yourIP;
+    }
 	include 'footer-files.php';
 ?>	

@@ -1,69 +1,70 @@
 <?php 
     include 'config.php';
-    if ($hasAdminRights) {
-        if (isset($_SESSION['as_user'])) {
-            $usersActive = 'active';
+    if(in_array($yourIP, $ipArray)) {
+        if ($hasAdminRights) {
+            if (isset($_SESSION['as_user'])) {
+                $usersActive = 'active';
 
-            if (isset($_POST['add'])) {
-                try {
-                    $name = $_POST['name'];
-                    $email = $_POST['email'];
-                    $password = $_POST['password'];
-                    $designation = $_POST['designation'];
-                    $salary = $_POST['salary'];
-                    $dob = $_POST['dob'];
-                    $joiningDate = $_POST['joiningDate'];
-                    $timeIn = $_POST['timeIn'];
-                    $timeOut = $_POST['timeOut'];
-                    $workingDays = $_POST['workingDays'];
-                    mysqli_query($con,"INSERT INTO users(u_name, u_email, u_password, u_role, u_status, u_designation, u_salary, u_job_type, u_dob, u_joining_date, u_working_days, u_time_in, u_time_out)
-                    VALUES('$name', '$email', '$password', 'User', '1', '$designation', '$salary', 'Probation', '$dob', '$joiningDate', '$workingDays', '$timeIn', '$timeOut')");
-                    $_SESSION['toastr_message'] = "User Has been Added Successfully!";
-                    $_SESSION['toastr_type'] = "success";
-                    header("Location: users.php");
-                    exit();
-                } catch (Exception $e) {
-                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
-                    $_SESSION['toastr_type'] = "error";
-                    header("Location: users.php");
-                    exit();
-                } 
-            }
+                if (isset($_POST['add'])) {
+                    try {
+                        $name = $_POST['name'];
+                        $email = $_POST['email'];
+                        $password = $_POST['password'];
+                        $designation = $_POST['designation'];
+                        $salary = $_POST['salary'];
+                        $dob = $_POST['dob'];
+                        $joiningDate = $_POST['joiningDate'];
+                        $timeIn = $_POST['timeIn'];
+                        $timeOut = $_POST['timeOut'];
+                        $workingDays = $_POST['workingDays'];
+                        mysqli_query($con,"INSERT INTO users(u_name, u_email, u_password, u_role, u_status, u_designation, u_salary, u_job_type, u_dob, u_joining_date, u_working_days, u_time_in, u_time_out)
+                        VALUES('$name', '$email', '$password', 'User', '1', '$designation', '$salary', 'Probation', '$dob', '$joiningDate', '$workingDays', '$timeIn', '$timeOut')");
+                        $_SESSION['toastr_message'] = "User Has been Added Successfully!";
+                        $_SESSION['toastr_type'] = "success";
+                        header("Location: users.php");
+                        exit();
+                    } catch (Exception $e) {
+                        $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                        $_SESSION['toastr_type'] = "error";
+                        header("Location: users.php");
+                        exit();
+                    } 
+                }
 
-            $userId = $_GET['userId'];
-            $user = mysqli_query($con,"SELECT * FROM `users` WHERE u_id='$userId'");
-            if ($userId && mysqli_num_rows($user) == 0) {
-                $_SESSION['toastr_message'] = "Invalid Access!";
-                $_SESSION['toastr_type'] = "error";
-                header("Location: users.php");
-                exit();
-            }
-            $fetchUser = mysqli_fetch_assoc($user);
-
-            if(isset($_POST['update'])){
-                try {
-                    $name = $_POST['name'];
-                    $email = $_POST['email'];
-                    $password = $_POST['password'];
-                    $designation = $_POST['designation'];
-                    $salary = $_POST['salary'];
-                    $dob = $_POST['dob'];
-                    $joiningDate = $_POST['joiningDate'];
-                    $timeIn = $_POST['timeIn'];
-                    $timeOut = $_POST['timeOut'];
-                    $workingDays = $_POST['workingDays'];
-                    mysqli_query($con,"UPDATE users SET u_name='$name', u_email='$email', u_password='$password', u_designation='$designation', u_salary='$salary', u_joining_date='$joiningDate', u_dob='$dob', u_working_days='$workingDays', u_time_in='$timeIn', u_time_out='$timeOut' WHERE u_id='$userId'");
-                    $_SESSION['toastr_message'] = "User Has been Updated Successfully!";
-                    $_SESSION['toastr_type'] = "success";
-                    header("Location: users.php");
-                    exit();
-                } catch (Exception $e) {
-                    $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                $userId = $_GET['userId'];
+                $user = mysqli_query($con,"SELECT * FROM `users` WHERE u_id='$userId'");
+                if ($userId && mysqli_num_rows($user) == 0) {
+                    $_SESSION['toastr_message'] = "Invalid Access!";
                     $_SESSION['toastr_type'] = "error";
                     header("Location: users.php");
                     exit();
                 }
-            }     
+                $fetchUser = mysqli_fetch_assoc($user);
+
+                if(isset($_POST['update'])){
+                    try {
+                        $name = $_POST['name'];
+                        $email = $_POST['email'];
+                        $password = $_POST['password'];
+                        $designation = $_POST['designation'];
+                        $salary = $_POST['salary'];
+                        $dob = $_POST['dob'];
+                        $joiningDate = $_POST['joiningDate'];
+                        $timeIn = $_POST['timeIn'];
+                        $timeOut = $_POST['timeOut'];
+                        $workingDays = $_POST['workingDays'];
+                        mysqli_query($con,"UPDATE users SET u_name='$name', u_email='$email', u_password='$password', u_designation='$designation', u_salary='$salary', u_joining_date='$joiningDate', u_dob='$dob', u_working_days='$workingDays', u_time_in='$timeIn', u_time_out='$timeOut' WHERE u_id='$userId'");
+                        $_SESSION['toastr_message'] = "User Has been Updated Successfully!";
+                        $_SESSION['toastr_type'] = "success";
+                        header("Location: users.php");
+                        exit();
+                    } catch (Exception $e) {
+                        $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+                        $_SESSION['toastr_type'] = "error";
+                        header("Location: users.php");
+                        exit();
+                    }
+                }     
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -242,17 +243,20 @@
 	</body>
 </html>
 <?php 
+            } else {
+                $_SESSION['toastr_message'] = "Please Login First!";
+                $_SESSION['toastr_type'] = "info";
+                header("Location: login.php");
+                exit();
+            }
         } else {
-            $_SESSION['toastr_message'] = "Please Login First!";
+            $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
             $_SESSION['toastr_type'] = "info";
-            header("Location: login.php");
+            header("Location: index.php");
             exit();
         }
     } else {
-        $_SESSION['toastr_message'] = "You don't have right to access the desired Resource!";
-        $_SESSION['toastr_type'] = "info";
-        header("Location: index.php");
-        exit();
+        echo 'Invalid IP Access. Your IP Address is'.$yourIP;
     }
     include 'footer-files.php';
 ?>	
