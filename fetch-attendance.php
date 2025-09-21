@@ -178,7 +178,7 @@
             exit();
         }
     } else {
-        echo 'Invalid IP Access. Your IP Address is'.$yourIP;
+        echo 'Invalid IP Access. Your IP Address is '.$yourIP;
     }
     include 'footer-files.php';
 ?>	
