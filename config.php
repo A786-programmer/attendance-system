@@ -2,7 +2,6 @@
     $con = mysqli_connect('localhost','root','','attendance_system');
     session_start();
     $currentDate = date('Y-m-d');
-    $currentTime = date("H:i");
     $currentDateTime = date('Y-m-d h:i:s');  
     date_default_timezone_set('Asia/Karachi');
     // date_default_timezone_set("Canada/Central");

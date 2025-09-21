@@ -20,9 +20,9 @@
                 <li class="<?= $ipActive ?>">
                     <a href="ip-address.php"><i data-feather="bar-chart-2"></i><span>IP Addresses</span></a>
                 </li>
-                <!-- <li class="<?= $payrollActive ?>">
-                    <a href="payroll.php"><img src="assets/img/icons/expense1.svg" alt="img"><span>Payroll</span></a>
-                </li> -->
+                <li class="<?= $notificationsActive ?>">
+                    <a href="notifications.php"><img src="assets/img/icons/purchase1.svg" alt="img"><span>Notifications</span></a>
+                </li>
                 <?php } ?>
             </ul>
         </div>

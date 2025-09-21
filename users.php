@@ -149,9 +149,9 @@
 								</div>
 								<div class="col-lg-12">
                                     <?php if ($userId) { ?>
-									<button href="javascript:void(0)" type="submit" name="update" class="btn btn-submit me-2">Update User</button>
+									<button type="submit" name="update" class="btn btn-submit me-2">Update User</button>
                                     <?php } else { ?>
-									<button href="javascript:void(0)" type="submit" name="add" class="btn btn-submit me-2">Add User</button>
+									<button type="submit" name="add" class="btn btn-submit me-2">Add User</button>
                                     <?php } ?>
 								</div>
                             </form>

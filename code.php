@@ -7,6 +7,51 @@ switch($type){
         session_destroy();
         echo '<script>window.location="login.php";</script>';
     break;
+    case 'deleteNotification':
+        $notificationId = $_GET['notificationId'];
+        try {
+            mysqli_query($con, "DELETE FROM `notifications` WHERE n_id='$notificationId'");
+            $_SESSION['toastr_message'] = "Notification Has been Deleted Successfully!";
+            $_SESSION['toastr_type'] = "success";
+            header("Location: notifications.php");
+            exit();
+        } catch (Exception $e) {
+            $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+            $_SESSION['toastr_type'] = "error";
+            header("Location: notifications.php");
+            exit();
+        }
+    break;
+    case 'activateNotification':
+        $notificationId = $_GET['notificationId'];
+        try {
+            mysqli_query($con, "UPDATE notifications SET n_status='1' WHERE n_id='$notificationId'");
+            $_SESSION['toastr_message'] = "Notification Has been Activated Successfully!";
+            $_SESSION['toastr_type'] = "success";
+            header("Location: notifications.php");
+            exit();
+        } catch (Exception $e) {
+            $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+            $_SESSION['toastr_type'] = "error";
+            header("Location: notifications.php");
+            exit();
+        }
+    break;
+    case 'deactivateNotification':
+        $notificationId = $_GET['notificationId'];
+        try {
+            mysqli_query($con, "UPDATE notifications SET n_status='0' WHERE n_id='$notificationId'");
+            $_SESSION['toastr_message'] = "Notification Has been Deactivated Successfully!";
+            $_SESSION['toastr_type'] = "success";
+            header("Location: notifications.php");
+            exit();
+        } catch (Exception $e) {
+            $_SESSION['toastr_message'] = "Something went wrong: " . $e->getMessage();
+            $_SESSION['toastr_type'] = "error";
+            header("Location: notifications.php");
+            exit();
+        }
+    break;
     case 'deleteUser':
         $userId = $_GET['userId'];
         try {

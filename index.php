@@ -1,17 +1,16 @@
 <?php 
     include 'config.php';
     if(in_array($yourIP, $ipArray)) {
-        if (isset($_SESSION['as_user'])) {
+        $userId = $_SESSION['as_user'];
+        if (isset($userId)) {
             $indexActive = 'active';
 
             // Handle Check-in
             if (isset($_POST['checkin'])) {
                 try {
-                    $userId = $_SESSION['as_user']; 
-                    $date   = date("Y-m-d");
                     $timeIn = date("H:i:s");
 
-                    $checkToday = mysqli_query($con, "SELECT * FROM attendance WHERE a_user='$userId' AND a_date='$date' AND a_time_in IS NOT NULL");
+                    $checkToday = mysqli_query($con, "SELECT * FROM attendance WHERE a_user='$userId' AND a_date='$currentDate' AND a_time_in IS NOT NULL");
                     if (mysqli_num_rows($checkToday) > 0) {
                         $_SESSION['toastr_message'] = "You have already checked in today!";
                         $_SESSION['toastr_type'] = "info";
@@ -25,11 +24,11 @@
                     $actualOut = $fetchUser['u_time_out'];
 
                     mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_user, a_actual_time_in, a_actual_time_out) 
-                        VALUES('$date', '$timeIn', '$userId', '$actualIn', '$actualOut')");
+                        VALUES('$currentDate', '$timeIn', '$userId', '$actualIn', '$actualOut')");
 
                     $_SESSION['toastr_message'] = "Checked In at $timeIn";
                     $_SESSION['toastr_type'] = "success";
-                    $_SESSION['checkin_time'] = "$date $timeIn";
+                    $_SESSION['checkin_time'] = "$currentDate $timeIn";
                     header("Location: index.php");
                     exit();
                 } catch (Exception $e) {
@@ -43,12 +42,10 @@
             // Handle Check-out
             if (isset($_POST['checkout'])) {
                 try {
-                    $userId = $_SESSION['as_user'];
                     $timesheet = isset($_POST['timesheet']) ? $_POST['timesheet'] : '';
-                    $date   = date("Y-m-d");
                     $timeOut = date("H:i:s");
 
-                    mysqli_query($con,"UPDATE attendance SET a_time_out='$timeOut', a_timesheet='" . mysqli_real_escape_string($con, $timesheet) . "' WHERE a_user='$userId' AND a_date='$date' AND (a_time_out IS NULL OR a_time_out='')");
+                    mysqli_query($con,"UPDATE attendance SET a_time_out='$timeOut', a_timesheet='" . mysqli_real_escape_string($con, $timesheet) . "' WHERE a_user='$userId' AND a_date='$currentDate' AND (a_time_out IS NULL OR a_time_out='')");
 
                     if (mysqli_affected_rows($con) > 0) {
                         $_SESSION['toastr_message'] = "Checked Out at $timeOut";
@@ -70,7 +67,6 @@
             }
 
             $today = date("Y-m-d");
-            $userId = $_SESSION['as_user'];
             $checkToday = mysqli_query($con,"SELECT * FROM attendance WHERE a_user='$userId' AND a_date='$today' AND (a_time_out IS NULL OR a_time_out='') ORDER BY a_id DESC LIMIT 1");
             $hasActiveCheckin = mysqli_num_rows($checkToday) > 0;
 
@@ -226,6 +222,64 @@
                         </div>
                     </div>
                     <?php } ?>
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h4>Notifications for Today</h4>
+                        </div>
+                    </div>
+                    <div class="activity">
+						<div class="activity-box">
+							<ul class="activity-list">
+                                <?php 
+                                    $day = trim($currentDate, date('Y')."-");
+                                    $birthday = mysqli_query($con, "SELECT u_profile_img, u_name FROM `users` WHERE u_role='User' AND u_dob LIKE '%$day'");
+                                    while ($fetchBirthday = mysqli_fetch_assoc($birthday)) {
+                                        $img = 'assets/img/customer/profile3.jpg';
+                                        if ($fetchBirthday['u_profile_img']) {
+                                            $img = 'user-profile-imgs/'.$fetchBirthday['u_profile_img'];
+                                        }
+                                ?>
+								<li> 
+									<div class="activity-user">
+										<a href="javascript:void(0)" title="">
+											<img alt="Lesley Grauer" src="<?= $img ?>" class=" img-fluid">
+										</a>
+									</div>
+									<div class="activity-content">
+										<div class="timeline-content">
+											<a href="javascript:void(0)" class="name"><?= $fetchBirthday['u_name'] ?></a> birthday is Today.
+											<span class="time">Wish him/her a Happy Birthday!</span>
+										</div>
+									</div>
+								</li>
+                                <?php 
+                                    }
+                                    $notifications = mysqli_query($con,"SELECT n_title, n_content, n_date_time, n_status FROM `notifications` WHERE n_status='1'");
+                                    while ($fetchNotifications = mysqli_fetch_assoc($notifications)) {
+                                        if ($fetchNotifications['n_user'] != 0 && $fetchNotifications['n_user'] != $userId) {
+                                            continue;
+                                        }
+                                ?>
+                                <li> 
+									<div class="activity-user">
+										<a href="javascript:void(0)" title="">
+											<img alt="Lesley Grauer" src="user-profile-imgs/logo.png" class=" img-fluid">
+										</a>
+									</div>
+									<div class="activity-content">
+										<div class="timeline-content">
+                                            <a href="javascript:void(0)" class="name"><?= $fetchNotifications['n_title'] ?></a>
+                                            <br><?= $fetchNotifications['n_content'] ?>
+											<span class="time">Posted At: <?= $fetchNotifications['n_date_time'] ?></span>
+										</div>
+									</div>
+								</li>
+                                <?php
+                                    }
+                                ?>
+							</ul>
+						</div>
+					</div>
                 </div>
             </div>
         </div>
