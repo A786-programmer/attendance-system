@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 18, 2025 at 01:13 PM
+-- Generation Time: Sep 21, 2025 at 05:51 PM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 7.3.28
 
@@ -34,7 +34,7 @@ CREATE TABLE `attendance` (
   `a_time_out` time NOT NULL,
   `a_user` int(11) NOT NULL,
   `a_actual_time_in` time NOT NULL,
-  `a_actual_time_out` time NOT NULL,
+  `a_actual_time_out` time DEFAULT NULL,
   `a_timesheet` varchar(5000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -43,9 +43,10 @@ CREATE TABLE `attendance` (
 --
 
 INSERT INTO `attendance` (`a_id`, `a_date`, `a_time_in`, `a_time_out`, `a_user`, `a_actual_time_in`, `a_actual_time_out`, `a_timesheet`) VALUES
-(17, '2025-09-15', '11:00:00', '22:00:00', 2, '11:00:00', '22:00:00', ''),
-(18, '2025-08-07', '14:48:00', '23:21:00', 2, '11:00:00', '22:00:00', ''),
-(20, '2025-09-18', '13:10:02', '13:11:01', 2, '11:00:00', '22:00:00', '');
+(17, '2025-09-15', '11:14:50', '22:00:00', 2, '11:00:00', '22:00:00', 'Working'),
+(18, '2025-08-07', '14:48:00', '23:21:00', 2, '11:00:00', '22:00:00', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
+(20, '2025-09-18', '13:10:02', '13:11:01', 2, '11:00:00', '22:00:00', ''),
+(24, '2025-09-20', '02:21:25', '02:22:36', 2, '11:00:00', '22:00:00', 'No worked done today');
 
 -- --------------------------------------------------------
 
@@ -63,7 +64,22 @@ CREATE TABLE `ip_addresses` (
 --
 
 INSERT INTO `ip_addresses` (`ia_id`, `ia_address`) VALUES
-(1, '192.155.10');
+(2, '::1');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `n_id` int(11) NOT NULL,
+  `n_title` varchar(50) NOT NULL,
+  `n_content` varchar(10000) NOT NULL,
+  `n_user` int(11) NOT NULL,
+  `n_date_time` datetime NOT NULL,
+  `n_status` enum('0','1') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -94,7 +110,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`u_id`, `u_name`, `u_email`, `u_password`, `u_profile_img`, `u_role`, `u_status`, `u_designation`, `u_salary`, `u_dob`, `u_job_type`, `u_joining_date`, `u_working_days`, `u_time_in`, `u_time_out`) VALUES
-(1, 'Admin ', 'admin@domain.com', '@dmin12345', 'Logo.png', 'Admin', '1', 'Boss', 0, '2025-09-12', '', '2025-09-10', 0, '00:00:00', '00:00:00'),
+(1, 'Admin ', 'admin@domain.com', '@dmin12345', 'Logo.png', 'Admin', '1', 'Boss', 0, '2025-09-21', '', '2025-09-10', 0, '00:00:00', '00:00:00'),
 (2, 'Arbaz Ali', 'arbu1499@gmail.com', 'arbazali', '', 'User', '1', 'CEO of HakamTechSol', 130000, '1999-01-14', 'Permanent', '2025-09-10', 7, '11:00:00', '22:00:00'),
 (5, 'Ibrahim Sharif', 'ibrahimsharif3812@gmail.com', '12345', '', 'User', '1', 'Team Lead', 35000, '2025-09-11', 'Probation', '2025-09-10', 0, '14:00:00', '21:00:00'),
 (6, 'Aqsa Hussain', 'aqsahussain126@gmail.com', '12345', '', 'User', '1', 'Freelancer Bidder', 10000, '2002-06-12', 'Probation', '2025-08-26', 0, '11:00:00', '18:00:00'),
@@ -118,6 +134,12 @@ ALTER TABLE `ip_addresses`
   ADD PRIMARY KEY (`ia_id`);
 
 --
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`n_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -131,13 +153,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `a_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `a_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `ip_addresses`
 --
 ALTER TABLE `ip_addresses`
-  MODIFY `ia_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ia_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `n_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`
