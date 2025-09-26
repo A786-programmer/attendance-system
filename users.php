@@ -225,7 +225,9 @@
                                             <td><?= $jobType ?></td>
                                             <td>
                                                 <a href="users.php?userId=<?= $fetchUsers['u_id'] ?>"><img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit"></a>
-                                                <a href="code.php?type=deleteUser&userId=<?= $fetchUsers['u_id'] ?>"><img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete"></a>
+                                                <a href="javascript:void(0);" class="confirm-delete" data-id="<?= $fetchUsers['u_id'] ?>">
+                                                    <img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete">
+                                                </a>
                                             </td>
                                         </tr>
                                         <?php 
@@ -263,3 +265,24 @@
 <!-- Datatable JS -->
 <script src="assets/js/jquery.dataTables.min.js"></script>
 <script src="assets/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).on("click", ".confirm-delete", function(e) {
+        e.preventDefault();
+        var id = $(this).data("id");
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This User will be permanently deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#FF9F43',
+            cancelButtonColor: '#f5365c', 
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location = "code.php?type=deleteUser&userId=" + id;
+            }
+        });
+    });
+</script>

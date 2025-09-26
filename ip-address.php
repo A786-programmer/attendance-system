@@ -79,7 +79,11 @@
                                         <tr>
                                             <td><?= $sno ?></td>
                                             <td><?= $fetchIpAddress['ia_address'] ?></td>
-                                            <td><a href="code.php?type=deleteIpAddress&ipAddressId=<?= $fetchIpAddress['ia_id'] ?>"><img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete"></a></td>
+<td>
+    <a href="javascript:void(0);" class="confirm-delete" data-id="<?= $fetchIpAddress['ia_id'] ?>">
+        <img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete">
+    </a>
+</td>
                                         </tr>
                                         <?php 
                                                 $sno++;
@@ -116,3 +120,25 @@
 <!-- Datatable JS -->
 <script src="assets/js/jquery.dataTables.min.js"></script>
 <script src="assets/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).on("click", ".confirm-delete", function(e) {
+        e.preventDefault();
+        var id = $(this).data("id");
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This IP Address will be permanently deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#FF9F43',
+            cancelButtonColor: '#f5365c',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location = "code.php?type=deleteIpAddress&ipAddressId=" + id;
+            }
+        });
+    });
+</script>
+

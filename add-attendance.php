@@ -182,7 +182,9 @@
                                             <td><?= $hoursNeeded ?></td>
                                             <td>
                                                 <a href="add-attendance.php?attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit"></a>
-                                                <a href="code.php?type=deleteAttendance&attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete"></a>
+                                                <a href="javascript:void(0);" class="me-3 confirm-text" data-id="<?= $fetchAttendance['a_id'] ?>">
+                                                    <img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete">
+                                                </a>                                            
                                             </td>
                                         </tr>
                                         <?php 
@@ -219,3 +221,25 @@
 ?>	
 <script src="assets/js/jquery.dataTables.min.js"></script>
 <script src="assets/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).on("click", ".confirm-text", function(e) {
+        e.preventDefault();
+        var id = $(this).data("id");
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This record will be permanently deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#FF9F43',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // delete request bhejna
+                window.location = "code.php?type=deleteAttendance&attenadanceId=" + id;
+            }
+        });
+    });
+</script>
+
