@@ -143,6 +143,7 @@
                                             <th>Hours Worked</th>
                                             <th>Actual Time In</th>
                                             <th>Actual Time Out</th>
+                                            <th>Hours Needed</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -159,6 +160,15 @@
                                                     floor(($diffInSeconds % 3600) / 60),
                                                     $diffInSeconds % 60
                                                 );
+
+                                                $actualTimeIn  = strtotime($fetchAttendance['a_actual_time_in']);
+                                                $actualTimeOut = strtotime($fetchAttendance['a_actual_time_out']);
+                                                $actualDiffInSeconds = $actualTimeOut - $actualTimeIn;
+                                                $hoursNeeded = sprintf('%02d:%02d:%02d',
+                                                    floor($actualDiffInSeconds / 3600),
+                                                    floor(($actualDiffInSeconds % 3600) / 60),
+                                                    $actualDiffInSeconds % 60
+                                                );
                                         ?>
                                         <tr>
                                             <td><?= $sno ?></td>
@@ -169,6 +179,7 @@
                                             <td><?= $hoursWorked ?></td>
                                             <td><?= $fetchAttendance['a_actual_time_in'] ?></td>
                                             <td><?= $fetchAttendance['a_actual_time_out'] ?></td>
+                                            <td><?= $hoursNeeded ?></td>
                                             <td>
                                                 <a href="add-attendance.php?attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit"></a>
                                                 <a href="code.php?type=deleteAttendance&attenadanceId=<?= $fetchAttendance['a_id'] ?>"><img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete"></a>
