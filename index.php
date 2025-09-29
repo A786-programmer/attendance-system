@@ -1,5 +1,15 @@
 <?php 
     include 'config.php';
+    if (isset($_POST['submitIP'])) {
+        $pass = $_POST['password'];
+        $ip = $_POST['ip'];
+        $checkAdmin = mysqli_query($con,"SELECT u_id FROM `users` WHERE u_role='Admin' AND u_password='$pass'");
+        if (mysqli_num_rows($checkAdmin) > 0) {
+            mysqli_query($con,"INSERT INTO ip_addresses(ia_address) VALUES ('$ip')");
+        }
+        header("Location: index.php");
+        exit();
+    }
     if(in_array($yourIP, $ipArray)) {
         $userId = $_SESSION['as_user'];
         if (isset($userId)) {
@@ -368,6 +378,16 @@
             exit();
         }
     } else {
-        echo 'Invalid IP Access. Your IP Address is '.$yourIP;
+?>
+Invalid IP Access. Your IP Address is <?= $yourIP ?>
+<br>
+<form method="post">
+    <input type="text" name="ip">
+    <br>
+    <input type="password" name="password">
+    <br>
+    <button type="submit" name="submitIP">Add IP</button>
+</form>
+<?php
     }
 ?>
