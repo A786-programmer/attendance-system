@@ -224,7 +224,12 @@
                                             <td><?= $status ?></td>
                                             <td><?= $jobType ?></td>
                                             <td>
-                                                <a href="users.php?userId=<?= $fetchUsers['u_id'] ?>"><img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit"></a>
+                                                <a href="user-details.php?userId=<?= $fetchUsers['u_id'] ?>">
+                                                    <img src="assets/img/icons/excel.svg" alt="img" data-bs-toggle="tooltip" title="View Details">
+                                                </a>
+                                                <a href="users.php?userId=<?= $fetchUsers['u_id'] ?>">
+                                                    <img src="assets/img/icons/edit.svg" alt="img" data-bs-toggle="tooltip" title="Edit">
+                                                </a>
                                                 <a href="javascript:void(0);" class="confirm-delete" data-id="<?= $fetchUsers['u_id'] ?>">
                                                     <img src="assets/img/icons/delete.svg" alt="img" data-bs-toggle="tooltip" title="Delete">
                                                 </a>
