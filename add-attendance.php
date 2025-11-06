@@ -11,10 +11,11 @@
                         $date     = $_POST['date'];
                         $clockIn  = $_POST['clockIn'];
                         $clockOut = $_POST['clockOut'];
+                        $timesheet = $_POST['timesheet'];
                         $user = mysqli_query($con,"SELECT u_time_in, u_time_out FROM `users` WHERE u_id='$userId'");
                         $fetchUser = mysqli_fetch_assoc($user);
-                        mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_time_out, a_user, a_actual_time_in, a_actual_time_out) 
-                        VALUES('$date', '$clockIn', '$clockOut', '$userId', '$fetchUser[u_time_in]', '$fetchUser[u_time_out]')");
+                        mysqli_query($con,"INSERT INTO attendance(a_date, a_time_in, a_time_out, a_user, a_actual_time_in, a_actual_time_out, a_timesheet) 
+                        VALUES('$date', '$clockIn', '$clockOut', '$userId', '$fetchUser[u_time_in]', '$fetchUser[u_time_out]', '$timesheet')");
                         $_SESSION['toastr_message'] = "Attendance Added Successfully!";
                         $_SESSION['toastr_type'] = "success";
                         header("Location: add-attendance.php");
@@ -45,8 +46,9 @@
                         $date     = $_POST['date'];
                         $clockIn  = $_POST['clockIn'];
                         $clockOut = $_POST['clockOut'];
+                        $timesheet = $_POST['timesheet'];
                         $attendanceId = $_POST['attendanceId'];
-                        mysqli_query($con,"UPDATE attendance SET a_date='$date', a_time_in='$clockIn', a_time_out='$clockOut', a_user='$userId' WHERE a_id='$attendanceId'");
+                        mysqli_query($con,"UPDATE attendance SET a_date='$date', a_time_in='$clockIn', a_time_out='$clockOut', a_timesheet= '$timesheet', a_user='$userId' WHERE a_id='$attendanceId'");
                         $_SESSION['toastr_message'] = "Attendance Updated Successfully!";
                         $_SESSION['toastr_type'] = "success";
                         header("Location: add-attendance.php");
@@ -112,6 +114,12 @@
                                     <div class="form-group">
                                         <label>Clock Out</label>
                                         <input style="width:100%" type="time" name="clockOut" value="<?= isset($fetchAttendance['a_time_out']) ? $fetchAttendance['a_time_out'] : '' ?>" required>
+                                    </div>
+                                </div>  
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Progress</label>
+                                        <textarea rows="5" cols="5" class="form-control" name="timesheet" placeholder="Enter Your Today's work here" required></textarea>
                                     </div>
                                 </div>  
                                 <div class="col-lg-12">

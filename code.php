@@ -1,7 +1,6 @@
 <?php
 include 'config.php';
 $type = $_GET['type'];
-
 switch($type){
     case 'logout':
         session_destroy();
@@ -68,6 +67,7 @@ switch($type){
         }
     break;
     case 'deactivateUser':
+        // echo $_GET['type'] . ' => ' . $_GET['userId']; exit;
         $userId = $_GET['userId'];
         try {
             mysqli_query($con,"UPDATE `users` SET u_status = '0' WHERE u_id='$userId'");

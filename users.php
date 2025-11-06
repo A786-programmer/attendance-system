@@ -190,16 +190,20 @@
                                             $users = mysqli_query($con,"SELECT * FROM `users` WHERE u_role='User'");
                                             while ($fetchUsers = mysqli_fetch_assoc($users)) {
                                                 $img = '';
-                                                $status = '<span class="badges bg-lightgreen">Active</span><br>
-                                                <a href="code.php?type=deactivateUser&userId='.$fetchUsers['u_id'].'" style="color: red">Deactivate</a>';
+                                                $statusChecked = ($fetchUsers['u_status'] == 1) ? 'checked' : '';
+
+                                                $status = '
+                                                <div class="status-toggle d-flex justify-content-between align-items-center">
+                                                    <input type="checkbox" class="check user-status-toggle" 
+                                                        id="user'.$fetchUsers['u_id'].'" 
+                                                        data-id="'.$fetchUsers['u_id'].'" 
+                                                        '.$statusChecked.'>
+                                                    <label for="user'.$fetchUsers['u_id'].'" class="checktoggle">checkbox</label>
+                                                </div>';
                                                 $jobType = '<span class="badges bg-lightgreen">Permanent</span><br>
                                                 <a href="code.php?type=moveToNoticePeriod&userId='.$fetchUsers['u_id'].'">Shift to Notice Period</a>';
                                                 if ($fetchUsers['u_profile_img']) {
                                                     $img = '<img height="50px" width="50px" src="user-profile-imgs/'.$fetchUsers['u_profile_img'].'" alt="">';
-                                                }
-                                                if ($fetchUsers['u_status'] == 0) {
-                                                    $status = '<span class="badges bg-lightred">Inactive</span><br>
-                                                    <a href="code.php?type=activateUser&userId='.$fetchUsers['u_id'].'" style="color: green">Activate</a>';
                                                 }
                                                 if ($fetchUsers['u_job_type'] == 'Probation') {
                                                     $jobType = '<span class="badges bg-lightyellow">Probation</span><br>
@@ -271,23 +275,18 @@
 <script src="assets/js/jquery.dataTables.min.js"></script>
 <script src="assets/js/dataTables.bootstrap4.min.js"></script>
 <script>
-    $(document).on("click", ".confirm-delete", function(e) {
-        e.preventDefault();
-        var id = $(this).data("id");
+    $(document).on('change', '.user-status-toggle', function() {
+        let userId = $(this).data('id');
+        let isChecked = $(this).is(':checked');
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This User will be permanently deleted!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#FF9F43',
-            cancelButtonColor: '#f5365c', 
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location = "code.php?type=deleteUser&userId=" + id;
-            }
-        });
+        if (isChecked) {
+            // user ON → activate
+            window.location.href = 'code.php?type=activateUser&userId=' + userId;
+        } else {
+            // user OFF → deactivate
+            window.location.href = 'code.php?type=deactivateUser&userId=' + userId;
+        }
     });
 </script>
+
+
